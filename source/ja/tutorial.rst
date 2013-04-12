@@ -273,3 +273,21 @@ Use of Classifier API: Train & Classify
    ]]
 
 メッセージ ``d2`` は ``"comp.sys.mac.hardware"`` に投稿された可能性が高いことが分かりました。
+
+Other Tutuorial Examples
+-------------------------
+本項では、Jubatus Clientの使い方を、サンプルプログラムを利用して解説します。
+
+.. toctree::
+   :maxdepth: 1
+   
+   Pre_reading
+   tutuorial/Classifier
+   tutuorial/Regression
+   tutuorial/Recommender
+   tutuorial/Graph
+   tutuorial/Stat
+   tutuorial/LOF
+
+   
+
