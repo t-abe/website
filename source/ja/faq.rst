@@ -1,8 +1,8 @@
 Frequently Asked Questions (FAQs)
-=================================
+=======================================
 
 Installation
-::::::::::::
+:::::::::::::::::
 
 - ``mecab_splitter.trivial`` と ``mecab_splitter_create.trivial`` の単体テストが通らない
 
@@ -116,7 +116,7 @@ RPC Errors
  この場合、クライアントは :mpidl:meth:`get_client` を使用して TCP 接続を明示的に切断する必要があります。
 
 Distributed Enviroment 
-:::::::::::::::::
+:::::::::::::::::::::::::::
 
 - Mixが正常動作したか確認する方法
 
