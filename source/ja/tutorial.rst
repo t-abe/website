@@ -281,7 +281,6 @@ Other Tutuorial Examples
 .. toctree::
    :maxdepth: 1
    
-   Pre_reading
    tutuorial/Classifier
    tutuorial/Regression
    tutuorial/Recommender
