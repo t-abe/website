@@ -142,36 +142,60 @@ Jubatusでは、データ量が膨大である、データソースが離れて�
 Jubatusを高い信頼性のもとで提供するためには、分散環境で動作させる必要があります。また高いパフォーマンスを維持するためには、JubatusおよびJubatusに関連するプロセス配置構成に気をつける必要があります。
 以下の図に、推奨するプロセス配置構成を示します。
 
-.. image:: ../images/process_configuration.png
-
 .. blockdiag::
 
     blockdiag process_configuration {
       group classifier{
       color = "#77FF77"
-      jubaclassifier1; jubaclassifier2; jubaclassifier3
+      Server1; Server2; Server3; 
       }
 
-      group client{
-      color = "#FF7777"
+      group m1{
+      label = "machine 1";
+      shape = line;
+      style = dashed;
       AP1;
-      AP2;
+      Keeper1;
       }
 
-      group keeper{
-      color = "#7777FF"
-      jubaclassifier_keeper1;
-      jubaclassifier_keeper2;
+      group m2{
+      label = "machine 2";
+      shape = line;
+      style = dashed;
+      AP2;
+      Keeper2;
       }
-      
+
+      group m3{
+      label = "machine 3";
+      shape = line;
+      style = dashed;
+      AP3;
+      Keeper3;
+      }
+
       LB -> AP1;
       LB -> AP2;
+      LB -> AP3;
 
-      AP1 -> jubaclassifier_keeper1 -> jubaclassifier1;
-             jubaclassifier_keeper1 -> jubaclassifier2;
-      AP2 -> jubaclassifier_keeper2 -> jubaclassifier1;
-             jubaclassifier_keeper2 -> jubaclassifier2;
-      
+      AP1 -> Keeper1 -> Server1;
+             Keeper1 -> Server2;
+             Keeper1 -> Server3;
+      AP2 -> Keeper2 -> Server1;
+             Keeper2 -> Server2;
+             Keeper2 -> Server3;
+      AP3 -> Keeper3 -> Server1;
+             Keeper3 -> Server2;
+             Keeper3 -> Server3;   
+             
+      Zookeeper -> Keeper1;
+      Zookeeper -> Keeper2;
+      Zookeeper -> Keeper3;
+
+      Zookeeper -> Server1;
+      Zookeeper -> Server2;
+      Zookeeper -> Server3;
+
     }
 ..
 
