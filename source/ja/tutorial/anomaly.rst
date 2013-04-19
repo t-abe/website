@@ -1,4 +1,4 @@
-LOF
+Anomaly
 =================
 
 ここではJubatusの外れ値検知である、jubaanomaryを使用した、Jubatus Clientの使い方を説明します。
@@ -15,7 +15,8 @@ LOFとは、N次元空間で、近く（近傍）にある点がどの程度あ�
 
 サンプルとして、KDDカップ（Knowledge Discovery and Data Mining Cup）の結果データを学習させ、外れ値を検知するプログラムを用います。
 
-最初に、結果データ（:download:`kddcup.data_10_percent.txt <../downloads/kddcup.data_10_percent.txt>`）をクライアント側で用意し、データを抽出しサーバ側に学習させます。
+最初に、結果データをクライアント側で用意し、データを抽出しサーバ側に学習させます。
+結果データは `KDD Cup 1999 Data <http://kdd.ics.uci.edu/databases/kddcup99/kddcup99.html>`_ から ``kddcup.data_10_percent.gz`` をダウンロード後、解凍してください。
 
 次に、学習させた際の戻り値から近傍かどうかを判定し、外れ値であれば結果を出力します。
 
@@ -39,30 +40,12 @@ Jubatus Clientを使ったコーディングは、主に以下の流れになり
   addメソッドの戻り値にて外れ値かどうか判定し、結果を出力します。
 
 --------------------------------
-Java
+サンプルプログラム
 --------------------------------
 
 .. toctree::
    :maxdepth: 2
-   
-   03_03_06_03_LOF_Java
-   
 
---------------------------------
-Python
---------------------------------
-
-.. toctree::
-   :maxdepth: 2
-   
-   03_03_06_04_LOF_Python
-
-
---------------------------------
-Ruby
---------------------------------
-
-.. toctree::
-   :maxdepth: 2
-   
-   03_03_06_05_LOF_Ruby
+   anomaly_python
+   anomaly_ruby
+   anomaly_java
