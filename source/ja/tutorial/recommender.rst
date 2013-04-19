@@ -13,7 +13,7 @@ Recommender
 
 サンプルとして、2012年日本プロ野球の野手成績を学習し、似たタイプ（成績）の野手を推薦するプログラム「npb_similar_player」を用いて説明していきます。
 
-最初に、`プロ野球データfreak <http://baseball-data.com/>`_ から取得した「規定打席の1/3以上の全野手のデータ」を打席数順にソートしたもの（:download:`baseball.csv <../downloads/baseball.csv>`）をクライアント側で用意し、推薦するためのモデルをサーバ側に学習させます。
+最初に、 `プロ野球データfreak <http://baseball-data.com/>`_ から取得した「規定打席の1/3以上の全野手のデータ」を打席数順にソートした CSV データ (`baseball.csv <https://raw.github.com/jubatus/jubatus-example/master/npb_similar_player/dat/baseball.csv>`_) をクライアント側で用意し、推薦するためのモデルをサーバ側に学習させます。
 
 次に、推薦用の入力データとして学習時と同様にCSVファイルから名前だけを抽出しサーバ側に与え、サーバ側では先ほど学習したモデルを用い、タイプ（成績）が似ている野手を推薦し返却します。
 そして、クライアント側で受け取った結果を出力するプログラムとなっています。
@@ -53,30 +53,12 @@ Jubatus Clientを使ったコーディングは、主に以下の流れになり
   similar_row_from_idメソッドの戻り値である推薦結果を出力します。
 
 --------------------------------
-Java
+サンプルプログラム
 --------------------------------
 
 .. toctree::
    :maxdepth: 2
-   
-   03_03_03_03_Recommender_Java
-   
 
---------------------------------
-Python
---------------------------------
-
-.. toctree::
-   :maxdepth: 2
-   
-   03_03_03_04_Recommender_Python
-
---------------------------------
-Ruby
---------------------------------
-
-.. toctree::
-   :maxdepth: 2
-   
-   03_03_03_05_Recommender_Ruby
-   
+   recommender_python
+   recommender_ruby
+   recommender_java
