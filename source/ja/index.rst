@@ -32,7 +32,7 @@ Table of Contents
    :maxdepth: 3
 
    quickstart
-   overview/Summary
+   overview/summary
    tutorial
    distribute_mode
    documentation
