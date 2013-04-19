@@ -1,8 +1,8 @@
 Frequently Asked Questions (FAQs)
-=======================================
+=================================
 
 Installation
-:::::::::::::::::
+::::::::::::
 
 - ``mecab_splitter.trivial`` と ``mecab_splitter_create.trivial`` の単体テストが通らない
 
@@ -14,16 +14,26 @@ Installation
 
  msgpack 0.4.x (Jubatus Ruby クライアントが間接的に依存しているライブラリ) には、Ruby 2.0 で動作する Rails アプリケーションからの呼び出しに失敗するという既知の問題があります。
 
-- プロキシを経由していますか?
-  
- Ubuntu環境の場合
- 
- Pythonの場合
+- プロキシを経由している場合のインストール方法は?
 
- ※プロキシを経由している場合、以下のようなエラーが出力されることがあります。その場合はオプションでプロキシを指定して実行してください。
+ Ubuntu環境のバイナリパッケージ(Apt)
+
+ aptのプロキシ設定をしていないとエラーが出力されますので、 ``/etc/apt/apt.conf`` に以下の行を追加してください。
 
  ::
-  
+
+  $ sudo vi /etc/apt/apt.conf
+
+ ::
+
+  Acquire::http::Proxy "http://username:password@proxy.example.com:port/";
+
+ Python クライアント (pip)
+
+ プロキシを経由している場合、以下のようなエラーが出力されることがあります。その場合はオプションでプロキシを指定して実行してください。
+
+ ::
+
   Cannot fetch index base URL http://pypi.python.org/simple/
   Could not find any downloads that satisfy the requirement jubatus
   No distributions at all found for jubatus
@@ -40,31 +50,15 @@ Installation
   Successfully installed jubatus msgpack-rpc-python msgpack-python tornado
   Cleaning up...
 
- pipコマンドがインストールされていない場合は、以下の手順でインストールしてください。
+ Ruby クライアント (RubyGems) の場合
 
- ::
+ 以下の環境変数を設定してからインストールを実行してください。
 
-  $ sudo apt-get install python-pip
- 
-  
- ※プロキシを経由している場合、aptのプロキシ設定をしていないとエラーが出力されますので、\ ``/etc/apt/apt.conf``\に以下の行を追加してください。
-
- ::
-
-  $ cd /etc/apt
-  $ sudo vi apt.conf
- 
- ::
-
-  Acquire::http::Proxy "http://username:password@proxy.example.com:port/";
-
- Rubyの場合
  ::
 
   export http_proxy=http://username:password@proxy.example.com:port/
 
-
-- Javaのクライアントライブラリ
+- Javaのクライアントライブラリを利用した開発について
 
  JavaでJubatusクライアントの開発をする場合は、  `GitHub <https://github.com/jubatus/jubatus-java-skelton>`_ で公開されているスケルトンプロジェクト（Eclipseプロジェクトのテンプレート）を利用すると便利です。
  以下の手順に従って、Java開発用スケルトンを利用してください。
@@ -77,8 +71,6 @@ Installation
 
  一度、インポートが完了すれば、Mavenが自動的にJubatusクライアントライブラリをダウンロードします。
  \ ``src/main/java``\ディレクトリの(default package)配下には、Jubatus recommenderを利用した簡単なプログラム「Client.java」が配置してあります。
-
-
 
 
 RPC Errors
@@ -115,17 +107,15 @@ RPC Errors
  この自動切断機能を無効にするには、 :option:`server -t` を 0 (タイムアウトなし) に設定します。
  この場合、クライアントは :mpidl:meth:`get_client` を使用して TCP 接続を明示的に切断する必要があります。
 
-Distributed Enviroment 
-:::::::::::::::::::::::::::
+Distributed Enviroment
+::::::::::::::::::::::
 
-- Mixが正常動作したか確認する方法
+- Jubatusサーバを複数台で分散させた場合、Mixが正常動作したか確認する方法はありますか?
 
-Q : Jubatusサーバを複数台で分散させた場合、Mixが正常動作したか確認する方法はありますか？*
-
-A : Mixの動作については、Jubatusサーバにおいて出力されるログにより確認することができます。以下のようなログが出力されます。
+ Mixの動作については、Jubatusサーバにおいて出力されるログにより確認することができます。以下のようなログが出力されます。
 
   ::
-  
+
     I0218 06:01:49.587540  3845 linear_mixer.cpp:173] starting mix:
     I0218 06:01:49.703693  3845 linear_mixer.cpp:231] mixed with 3 servers in 0.112371 secs, 8 bytes (serialized data) has been put.
     I0218 06:01:49.705159  3845 linear_mixer.cpp:185] .... 22th mix done.
@@ -133,32 +123,20 @@ A : Mixの動作については、Jubatusサーバにおいて出力されるロ
     I0218 06:03:15.642297  3845 linear_mixer.cpp:231] mixed with 3 servers in 0.137258 secs, 8 bytes (serialized data) has been put.
     I0218 06:03:15.644685  3845 linear_mixer.cpp:185] .... 23th mix done.
 
-- サーバを複数用意について
+- 分散構成のJubatusを準備する場合、jubaclassifier、jubaclassifier_keeper/Client、ZooKeeperを1台のサーバにインストールし、その構成のサーバを複数用意しても問題ありませんか?
 
-Q : 分散構成のJubatusを準備する場合、jubaclassifier、jubaclassifier_keeper/Client、ZooKeeperを1台のサーバにインストールし、その構成のサーバを複数用意しても問題ありませんか？*
-
-A : 問題ありません。但し、各プロセスを単独のサーバで動作させた場合と比べ、処理性能が低下する可能性があります。またZooKeeperは奇数台でアンサンブルを構成することを推奨いたします。
-
-- shuffleについて
-
-Q ： Classifier（shogun）のpython版サンプルにおいて、学習データをshuffleする処理を実行しておりますが、shuffleは必須ですか？*
-
-A : はい、shuffleは必須です。
-
-
+ 問題ありません。
+ 但し、各プロセスを単独のサーバで動作させた場合と比べ、処理性能が低下する可能性があります。またZooKeeperは奇数台でアンサンブルを構成することを推奨します。
 
 Study Model
-:::::::::::::::::
+:::::::::::
 
-- 学習のさせ方と学習モデルの関係
+- Classifier/Regression に学習させる場合、以下の違いによってモデルに差異は発生しますか?
 
-Q : Jubatusに学習をさせる場合、以下のような学習のさせ方の違いにより、学習モデルに差異は発生しますか？*
-    ・ 学習データを一括してJubatusに渡し学習させる（trainメソッドを1度だけ呼び出す）
-    
-    ・ 学習データの数だけtrainメソッドを呼び出し、学習させる
+  - 学習データを一括してJubatusに渡し学習させる（バルク学習、trainメソッドを1度だけ呼び出す）
+  - 学習データの数だけtrainメソッドを呼び出し、学習させる
 
-A : いいえ、学習モデルに差異は発生しません。
-
+ モデルに差異は発生しません。
 
 Anomaly detection
 :::::::::::::::::
