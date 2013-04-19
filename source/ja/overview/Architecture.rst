@@ -78,7 +78,6 @@ Jubatusではサーバノード側の処理をスケールアウトさせるた�
       }
       client -> jubaclassifier_keeper -> jubaclassifier1, jubaclassifier2, jubaclassifier3;
     }
-| 
 
 *パターン3*
 
@@ -116,9 +115,7 @@ Jubatusでは、データ量が膨大である、データソースが離れて�
       client3 -> jubaclassifier_keeper3 -> jubaclassifier1;
                  jubaclassifier_keeper3 -> jubaclassifier2;
                  jubaclassifier_keeper3 -> jubaclassifier3;
-      
       }
-| 
 
 *システム構成による分析精度・処理性能の違い*
 
@@ -139,7 +136,6 @@ Jubatusでは、データ量が膨大である、データソースが離れて�
  +---------------+---------------------------------+---------------------------------+
 
 パターン2でクライアント側がボトルネックになっていたり、分散している場合にパターン3を使う、と考えてください。
-| 
 
 *推奨するプロセス配置構成について*
 
@@ -148,10 +144,9 @@ Jubatusを高い信頼性のもとで提供するためには、分散環境で�
 
 .. image:: ../images/process_configuration.png
 
-
 .. blockdiag::
 
-    blockdiag multi_multi {
+    blockdiag process_configuration {
       group classifier{
       color = "#77FF77"
       jubaclassifier1; jubaclassifier2; jubaclassifier3
@@ -159,41 +154,38 @@ Jubatusを高い信頼性のもとで提供するためには、分散環境で�
 
       group client{
       color = "#FF7777"
-      client1;
-      client2;
-      client3;
+      AP1;
+      AP2;
       }
 
       group keeper{
       color = "#7777FF"
       jubaclassifier_keeper1;
       jubaclassifier_keeper2;
-      jubaclassifier_keeper3;
       }
       
-      client1 -> jubaclassifier_keeper1 -> jubaclassifier1;
-                 jubaclassifier_keeper1 -> jubaclassifier2;
-                 jubaclassifier_keeper1 -> jubaclassifier3;
-      client2 -> jubaclassifier_keeper2 -> jubaclassifier1;
-                 jubaclassifier_keeper2 -> jubaclassifier2;
-                 jubaclassifier_keeper2 -> jubaclassifier3;
-      client3 -> jubaclassifier_keeper3 -> jubaclassifier1;
-                 jubaclassifier_keeper3 -> jubaclassifier2;
-                 jubaclassifier_keeper3 -> jubaclassifier3;
+      LB -> AP1;
+      LB -> AP2;
+
+      AP1 -> jubaclassifier_keeper1 -> jubaclassifier1;
+             jubaclassifier_keeper1 -> jubaclassifier2;
+      AP2 -> jubaclassifier_keeper2 -> jubaclassifier1;
+             jubaclassifier_keeper2 -> jubaclassifier2;
       
-      }
     }
 ..
 
 
  - Jubatus Keeper
+
   jubaXXX_keeperという名前の実行ファイルの総称をJubatus Keeperと表記します。
   運用の容易さ、アプリケーションの実装の容易さから、クライアントアプリケーションと1:1の構成とし、クライアントアプリケーションと同一のサーバで動作させることを推奨します。   
   クライアントアプリケーションからJubatus Keeperへ通信できない場合（プロセスがダウンしているなど）に対して、再度プロセスを起動し直すなどの制御が必要になるためです。
 
  - Jubatus Server
+
   jubaXXXという名前の実行ファイルをJubatus Serverと表記します。
-  --name で同じ名前を指定することで、複数のサーバプロセスが協調動作します。Jubatusは、サーバプロセスが1つでも動作している限り、利用可能です。
+  ``--name`` で同じ名前を指定することで、複数のサーバプロセスが協調動作します。Jubatusは、サーバプロセスが1つでも動作している限り、利用可能です。
 
   上の図では、マシンのN 台に障害が発生した場合でも、すべてのインスタンスが利用可能なよう、N+1台のマシンに分散してプロセスを配置しています。
 
