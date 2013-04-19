@@ -54,7 +54,7 @@ Python
  12 : from jubatus.classifier.types import datum
  13 : 
  14 : def train(client):
- 15 :     # ② 学習用データの準備
+ 15 :     # 2. 学習用データの準備
  16 :     # predict the last ones (that are commented out)
  17 :     train_data = [ 
  18 :         (u'徳川', datum([('name', u'家康')], [])),
@@ -111,25 +111,25 @@ Python
  69 :     # training data must be shuffled on online learning!
  70 :     random.shuffle(train_data)
  71 : 
- 72 :     # ③ データの学習（学習モデルの更新）
+ 72 :     # 3. データの学習（学習モデルの更新）
  73 :     client.train(name, train_data)
  74 : 
  75 : def predict(client):
  76 :     # predict the last shogun
- 77 :     # ④ 予測用データの準備
+ 77 :     # 4. 予測用データの準備
  78 :     data = [
  79 :         datum([('name', u'慶喜')], []),
  80 :         datum([('name', u'義昭')], []),
  81 :         datum([('name', u'守時')], []),
  82 :         ]
  83 :     for d in data:
- 84 :         # ⑤ 学習モデルに基づく予測
+ 84 :         # 5. 学習モデルに基づく予測
  85 :         res = client.classify(name, [d])
- 86 :         # ⑥ 結果の出力
+ 86 :         # 6. 結果の出力
  87 :         print max(res[0], key = lambda x: x.score).label, d.string_values[0][1]
  88 : 
  89 : if __name__ == '__main__':
- 90 :     # ① Jubatus Serverへの接続設定
+ 90 :     # 1. Jubatus Serverへの接続設定
  91 :     client = jubatus.Classifier(host, port)
  92 :     # run example
  93 :     train(client)
@@ -166,15 +166,17 @@ Python
    
 **shogun.py**
 
-3.3.1.4.1.に記載したソースコードを用いて、学習と予測の手順を説明します。
+学習と予測の手順を説明します。
 
 Classifierのクライアントプログラムは、jubatus.classifierを利用して作成します。使用するメソッドは、学習を行うtrainメソッドと、与えられたデータから予測を行うclassifyメソッドの2つです。
 
- ① Jubatus Serverへの接続設定
+ 1. Jubatus Serverへの接続設定
+
   Jubatus Serverへの接続を行います（33行目）。
   Jubatus ServerのIPアドレス，Jubatus ServerのRPCポート番号を設定します。
 
- ② 学習用データの準備
+ 2. 学習用データの準備
+
   Jubatus Serverに学習させるデータList<TupleStringDatum>を作成します（37行目）。
   
   ClassifierClientではlist<tuple<string, datum>>を作成し、ClassifierClientのtrainメソッドに与えることで、学習が行われます。下図に、今回作成する学習データの構造を示します。
@@ -212,17 +214,21 @@ Classifierのクライアントプログラムは、jubatus.classifierを利用�
 
   構造体train_dataの宣言で初期値として、上記の表どおりの構造で作成します。labelに"徳川"、Datumのstring_valuesに"name"と"家康”というセットを名の数だけ作成します。Datumのnum_valuesは空を指定します。（17-67行目）
 
- ③データの学習（学習モデルの更新）
-  ②の工程で作成した学習データを、trainメソッドに渡すことで学習が行われます（73行目）。trainメソッドの第1引数は、タスクを識別するZookeeperクラスタ内でユニークな名前を指定します。
+ 3. データの学習（学習モデルの更新）
 
- ④予測用データの準備
+  2.の工程で作成した学習データを、trainメソッドに渡すことで学習が行われます（73行目）。trainメソッドの第1引数は、タスクを識別するZookeeperクラスタ内でユニークな名前を指定します。
+
+ 4. 予測用データの準備
+
   予測も学習時と同様に、Datumを作成します。DatumのListをClassifierClientのclassifyメソッドに与えることで、予測が行われます。「nameが"慶喜"」の将軍の姓は何かを予測させるため、学習時と同様に構造体dataの宣言で初期値として、Datumのstring_valuesに"name"と"慶喜"を設定します。Datumのnum_valuesは空を指定します。（78-82行目）
 
- ⑤学習データに基づく予測
-  ④で作成したDatumのListを、classifyメソッドに渡すことで、予測値のListを得ることができます（85行目）。
+ 5. 学習データに基づく予測
 
- ⑥結果の出力
-  結果出力、⑤で得たListを渡し、Listを参照することで予測値を見ることができます。サンプルでは、「確からしさの値」を表すscoreが最大であるlabel（姓）を判断し（87行目）、名と組み合わせて表示しています。
+  4で作成したDatumのListを、classifyメソッドに渡すことで、予測値のListを得ることができます（85行目）。
+
+ 6. 結果の出力
+
+  結果出力、5.で得たListを渡し、Listを参照することで予測値を見ることができます。サンプルでは、「確からしさの値」を表すscoreが最大であるlabel（姓）を判断し（87行目）、名と組み合わせて表示しています。
 
 ------------------------------------
 サンプルプログラムの実行

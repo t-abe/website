@@ -76,9 +76,24 @@ Jubatus サーバは、デフォルトでは TCP 9199 番ポートを利用し�
 
 Jubatus と Jubatus クライアントは、TCP/IP ネットワーク経由で `MessagePack-RPC <http://msgpack.org>`_ プロトコルを使用して通信します。
 
-.. figure:: ../_static/single_single.png
-   :width: 70 %
-   :alt: single client, single server
+.. blockdiag::
+
+    blockdiag single_single {
+      group classifier{
+      color = "#77FF77"
+      jubaclassifier;
+      }
+
+      group client{
+      color = "#FF7777"
+      client;
+      }
+
+      client -> jubaclassifier;
+    }
+
+
+
 
 それでは、 `チュートリアルプログラム <https://github.com/jubatus/jubatus-tutorial-python>`_ とデータセットをダウンロードしましょう。
 

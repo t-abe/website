@@ -60,10 +60,10 @@ Ruby
  11 : require 'jubatus/anomaly/types'
  12 : 
  13 : 
- 14 : # ① Jubatus Serverへの接続設定
+ 14 : # 1.Jubatus Serverへの接続設定
  15 : client = Jubatus::Anomaly::Client::Anomaly.new($host, $port)
  16 : 
- 17 : # ② 学習用データの準備
+ 17 : # 2.学習用データの準備
  18 : open("kddcup.data_10_percent.txt") {|f|
  19 :   f.each { |line|
  20 :     duration, protocol_type, service, flag, src_bytes, dst_bytes, land, wrong_fragment, urgent, hot, num_failed_logins, logged_in, num_compromised, root_shell, su_attempted, num_root, num_file_creations, num_shells, num_access_files, num_outbound_cmds, is_host_login, is_guest_login, count, srv_count, serror_rate, srv_serror_rate, rerror_rate, srv_rerror_rate, same_srv_rate, diff_srv_rate, srv_diff_host_rate, dst_host_count, dst_host_srv_count, dst_host_same_srv_rate, dst_host_diff_srv_rate, dst_host_same_src_port_rate, dst_host_srv_diff_host_rate, dst_host_serror_rate, dst_host_srv_serror_rate, dst_host_rerror_rate, dst_host_srv_rerror_rate, label = line.split(",")
@@ -114,10 +114,10 @@ Ruby
  65 :         ["dst_host_srv_rerror_rate", dst_host_srv_rerror_rate.to_f],
  66 :         ]
  67 :        )
- 68 :     # ③ データの学習（学習モデルの更新）
+ 68 :     # 3.データの学習（学習モデルの更新）
  69 :     ret = client.add($name, datum)
  70 :     
- 71 :     # ④ 結果の出力
+ 71 :     # 4.結果の出力
  72 :     if (ret[1] != Float::INFINITY) and (ret[1] != 1.0) then
  73 :       print ret, label
  74 :     end
@@ -161,24 +161,28 @@ Ruby
 
  anomaly.rbでは、csvから読み込んだデータをJubatusサーバ与え、外れ値を検出し出力します。
 
- ① Jubatus Serverへの接続設定
+ 1. Jubatus Serverへの接続設定
+
   Jubatus Serverへの接続を行います（15行目）。
   Jubatus ServerのIPアドレス、Jubatus ServerのRPCポート番号を設定します。
   
- ② 学習用データの準備
+ 2. 学習用データの準備
+
   AnomalyClientでは、Datumをaddメソッドに与えることで、学習および外れ値検知が行われます。
   今回はKDDカップ（Knowledge Discovery and Data Mining Cup）の結果（TEXTファイル）を元に学習用データを作成していきます。
   まず、学習用データの元となるTEXTファイルを読み込みます（18-19行目）。
   このTEXTファイルはカンマ区切りで項目が並んでいるので、取得した1行を’,’で分割し要素ごとに分けます（20行目）。
   取得した要素を用いて学習用データdatumを作成します（21-67行目）。
   
- ③ データの学習（学習モデルの更新）
+ 3. データの学習（学習モデルの更新）
+
   AnomalyClientのaddメソッドに②で作成したデータを渡します（69行目）。
   addメソッドの第1引数は、タスクを識別するZookeeperクラスタ内でユニークな名前を指定します。（スタンドアロン構成の場合、空文字（""）を指定）
   第2引数として、先ほど②で作成したDatumを指定します。
   戻り値として、tuple<string, float>型で点IDと異常値を返却します。
   
- ④ 結果の出力
+ 4. 結果の出力
+
   addメソッドの戻り値である異常値から外れ値かどうかを判定します。
   異常値が無限ではなく、1.0以外の場合は外れ値と判断し出力します（72-74行目）。
 

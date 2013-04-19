@@ -72,28 +72,28 @@ Java
  031 : 	};
  032 : 
  033 : 	private final void start() throws Exception {
- 034 : 		// ①Jubatus Serverへの接続設定
+ 034 : 		// 1.Jubatus Serverへの接続設定
  035 : 		ClassifierClient client = new ClassifierClient(HOST, PORT, 5);
  036 : 
- 037 : 		// ②学習用データの準備
+ 037 : 		// 2.学習用データの準備
  038 : 		List<TupleStringDatum> studyData = this.makeStudyData();
  039 : 
- 040 : 		// ③データの学習（学習モデルの更新）
+ 040 : 		// 3.データの学習（学習モデルの更新）
  041 : 		client.train(NAME, studyData);
  042 : 
- 043 : 		// ④予測用データの準備
+ 043 : 		// 4.予測用データの準備
  044 : 		List<Datum> exData = this.makeExData();
  045 : 
- 046 : 		// ⑤学習データに基づく予測
+ 046 : 		// 5.学習データに基づく予測
  047 : 		List<List<EstimateResult>> result = client.classify(NAME, exData);
  048 : 
- 049 : 		// ⑥結果の出力
+ 049 : 		// 6.結果の出力
  050 : 		this.output(exData, result);
  051 : 
  052 : 		return;
  053 : 	}
  054 : 
- 055 : 	// ②学習用データの準備
+ 055 : 	// 2.学習用データの準備
  056 : 	private final List<TupleStringDatum> makeStudyData() {
  057 : 		List<TupleStringDatum> result = new ArrayList<TupleStringDatum>();
  058 : 		String familyName = "";
@@ -143,7 +143,7 @@ Java
  102 : 		return result;
  103 : 	}
  104 : 
- 105 : 	// ④予測用データの準備
+ 105 : 	// 4.予測用データの準備
  106 : 	private List<Datum> makeExData() {
  107 : 		List<Datum> result = new ArrayList<Datum>();
  108 : 
@@ -237,15 +237,17 @@ Java
    
 **Shogun.java**
 
-3.3.1.3.1.に記載したソースコードを用いて、学習と予測の手順を説明します。
+学習と予測の手順を説明します。
 
 Classifierのクライアントプログラムは、us.jubat.classifierクラス内で定義されているClassifierClientクラスを利用して作成します。使用するメソッドは、学習を行うtrainメソッドと、与えられたデータから予測を行うclassifyメソッドの2つです。
 
- ① Jubatus Serverへの接続設定
+ 1. Jubatus Serverへの接続設定
+
   Jubatus Serverへの接続を行います（35行目）。
   Jubatus ServerのIPアドレス，Jubatus ServerのRPCポート番号，接続待機時間を設定します。
 
- ② 学習用データの準備
+ 2. 学習用データの準備
+
   Jubatus Serverに学習させるデータList<TupleStringDatum>を作成します（38行目）。
   
   ClassifierClientでは、TupleStringDatumのArrayListを作成し、ClassifierClientのtrainメソッドに与えることで、学習が行われます。下図に、今回作成する学習データの構造を示します。
@@ -289,16 +291,20 @@ Classifierのクライアントプログラムは、us.jubat.classifierクラス
 
   以上のようにして作成したList<TuplestringDatum>をシャッフルします。（100行目）これで、学習用データの作成が完了します。
 
- ③データの学習（学習モデルの更新）
-  ②の工程で作成した学習データを、trainメソッドに渡すことで学習が行われます（41行目）。trainメソッドの第1引数は、タスクを識別するZookeeperクラスタ内でユニークな名前を指定します。
+ 3. データの学習（学習モデルの更新）
 
- ④予測用データの準備
+  2の工程で作成した学習データを、trainメソッドに渡すことで学習が行われます（41行目）。trainメソッドの第1引数は、タスクを識別するZookeeperクラスタ内でユニークな名前を指定します。
+
+ 4. 予測用データの準備
+
   予測も学習時と同様に、入力データからDatumを作成します。DatumのArrayListをClassifierClientのclassifyメソッドに与えることで、予測が行われます。予測用データを作成するprivateメソッド「makeExData」で、DatumのArrayListを宣言します（107行目）。「nameが"慶喜"」の将軍の姓は何かを予測させるため、学習時と同様にDatumを作成し、作成したDatumをArrayListに追加します（109-131行目）。
 
- ⑤学習データに基づく予測
+ 5. 学習データに基づく予測
+
   ④で作成したDatumのArrayListを、classifyメソッドに渡すことで、予測値のListを得ることができます（47行目）。
 
- ⑥結果の出力
+ 6. 結果の出力
+
   結果出力用のprivateメソッド「output」に、⑤で得たListを渡し、Listを参照することで予測値を見ることができます。サンプルでは、「確からしさの値」を表すscoreが最大であるlabel（姓）を判断し（149-154行目）、名と組み合わせて表示しています。
 
 ------------------------------------
