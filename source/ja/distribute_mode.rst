@@ -26,7 +26,7 @@ ZooKeeperを高い信頼性で動作させるために、以下のことを注�
 Parallel Processing
 ==================================================
 
-① ZooKeeperのインストール
+1. ZooKeeperのインストール
  
  Apache ZooKeeperの `ダウンロードサイト <http://www.apache.org/dyn/closer.cgi/zookeeper/>`_ からZooKeeperを取得します。
  
@@ -47,7 +47,7 @@ Parallel Processing
   http_proxy=http://username:password@proxy.example.com:port/
 
 
-② ZooKeeperの設定ファイル（zoo.cfg）の作成
+2. ZooKeeperの設定ファイル（zoo.cfg）の作成
 
  zookeeper-3.4.5/conf 配下にサンプルの設定ファイルがありますので、そちらをコピーして作成してください。
  
@@ -57,7 +57,7 @@ Parallel Processing
 
  ここでは、zoo.cfgの各設定項目の説明は省きます。
  
-③ ZooKeeperの起動
+3. ZooKeeperの起動
  
  ZooKeeperは以下のようにして起動します。
  
@@ -70,7 +70,7 @@ Parallel Processing
 
  以降では、ZooKeeperがlocalhost:2181で動作していると仮定します。この設定はzoo.cfgで変更可能です。
 
-④ 設定ファイルをZooKeeperに設定
+4. 設定ファイルをZooKeeperに設定
 
  分散環境では、事前に設定ファイルをZooKeeperに登録します。登録にはjubaconfigというツールを使用します。
  
@@ -78,7 +78,7 @@ Parallel Processing
  
   $ jubaconfig --cmd write --zookeeper=localhost:2181 --file jubatus-example/shogun/shogun.json --name shogun --type classifier
 
-⑤ Jubatus Keeperの起動
+5. Jubatus Keeperの起動
 
  Jubatus KeeperはRPCリクエストをクライアントからサーバに中継(プロキシ)します。
  分散環境では、クライアントからのRPCリクエストを直接サーバに送るのではなく、一度Keeperに送ります。
@@ -93,7 +93,7 @@ Parallel Processing
  これにより、jubaclassifier_keeperは、TCP 9198番ポートでRPCリクエストを待ち受けます。
  
 
-⑥ サーバプロセスの起動
+6. サーバプロセスの起動
 
  Jubatusサーバを分散環境で開始するには、--nameと--zookeeperオプションをサーバの起動時に指定します。
  同じ--nameで起動されたサーバプロセスは同じクラスタに所属し、お互いに協調動作します。
@@ -116,7 +116,7 @@ Parallel Processing
   [XXX.XXX.XXX.XXX_9180, XXX.XXX.XXX.XXX_9181, XXX.XXX.XXX.XXX_9182]
 
 
-⑦ プログラムの実行
+7. プログラムの実行
 
  今回はサーバではなくKeeperに接続するため、ポート番号にはjubaclassifier_keeperで指定したポート番号を指定します。
  また、分散環境では、RPCリクエストをKeeperへ送る際にクラスタ名を指定する必要があります。
@@ -125,7 +125,7 @@ Parallel Processing
  
   $ python shogun.py
 
-⑧ ZooKeeperの停止
+8. ZooKeeperの停止
 
  ZooKeeperを停止する場合は以下のようにして停止します。
  
@@ -158,7 +158,7 @@ Cluster Configurations
   |             | | ZooKeeper - 3                    |
   +-------------+------------------------------------+
 
-① ZooKeeperの設定
+1. ZooKeeperの設定
 
  複数台でZooKeeperを起動する場合、それぞれのzoo.cfgに設定を追加します。
  
@@ -179,7 +179,7 @@ Cluster Configurations
   $ cd /tmp/zookeeper         （dataDir=に指定しているディレクトリ）
   $ sudo vi myid
   
-② ZooKeeperの起動
+2. ZooKeeperの起動
  
  ZooKeeperサーバを起動します(これらの間でアンサンブル構成を行う必要があります)。
  
@@ -189,7 +189,7 @@ Cluster Configurations
   [192.168.0.12]$ bin/zkServer.sh start
   [192.168.0.13]$ bin/zkServer.sh start
  
-③ Jubatus Keeperの起動
+3. Jubatus Keeperの起動
 
  jubaclassifier_keeperプロセスを起動します。jubaclassifier_keeperはTCP 9199番ポートをデフォルトで使用します。
  
@@ -200,7 +200,7 @@ Cluster Configurations
   [192.168.0.13]$ jubaclassifier_keeper --zookeeper 192.168.0.11:2181,192.168.0.12:2181,192.168.0.13:2181
   
 
-④ Jubavisor:サーバプロセス管理のエージェント
+4. Jubavisor:サーバプロセス管理のエージェント
 
  jubavisorはサーバプロセスを管理するためのエージェントプロセスです。
 

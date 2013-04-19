@@ -36,15 +36,15 @@ Ruby
  12 : require 'jubatus/stat/types'
  13 : 
  14 : 
- 15 : # ① Jubatus Serverへの接続設定
+ 15 : # 1. Jubatus Serverへの接続設定
  16 : client = Jubatus::Stat::Client::Stat.new($host, $port)
  17 : 
- 18 : # ② 学習用データの準備
+ 18 : # 2. 学習用データの準備
  19 : CSV.open("fruit.csv", "r") do |row|
  20 :   row.each do |item|
  21 :     fruit, diameter, weight, price = item
  22 :     
- 23 :     # ③ データの学習（学習モデルの更新）
+ 23 :     # 3. データの学習（学習モデルの更新）
  24 :     client.push($name, fruit+"dia", diameter.to_f)
  25 :     client.push($name, fruit+"wei", weight.to_f)
  26 :     client.push($name, fruit+"pri", price.to_f)
@@ -54,7 +54,7 @@ Ruby
  30 : client.save($name, "stat.dat")
  31 : client.load($name, "stat.dat")
  32 : 
- 33 : # ④ 結果の出力
+ 33 : # 4. 結果の出力
  34 : for fr in ["orange", "apple", "melon"] do
  35 :   for par in ["dia", "wei", "pri"] do
  36 :     print "sum :", fr+par, " ", client.sum($name, fr+par), "\n"
@@ -118,18 +118,22 @@ Ruby
  各メソッドの最初のパラメタnameは、タスクを識別するZooKeeperクラスタ内でユニークな名前である。 スタンドアロン構成では、空文字列 ("") を指定する。
 
  1. Jubatus Serverへの接続設定
+
   Jubatus Serverへの接続を行います（16行目）。
   Jubatus ServerのIPアドレス、Jubatus ServerのRPCポート番号を設定します。
   
  2. 学習用データの準備
+
   StatClientでは、項目名と値をpushメソッドに与えることで、学習が行われます。
   今回はサンプル用に作成した"フルーツの種類"・"直径"・"重さ"・"価格"の情報を持つCSVファイルを元に学習用データを作成していきます。
   まず、学習用データの元となるCSVファイルを読み込みます。 ここでは、CSVファイルを1行ずつループで読み込んで処理します（19-28行目）。 
   
  3. データの学習（学習モデルの更新）
-  StatClientのpushメソッドに②で作成したデータに項目名を付けて渡します（24-26行目）。ここでの項目名は"直径"の場合、フルーツの種類＋"dia"という形にして、"重さ"・"価格"についても同じようにpushメソッドを呼び出します。
+
+  StatClientのpushメソッドに2. で作成したデータに項目名を付けて渡します（24-26行目）。ここでの項目名は"直径"の場合、フルーツの種類＋"dia"という形にして、"重さ"・"価格"についても同じようにpushメソッドを呼び出します。
   
  4. 結果の出力
+
   StatClientの各統計分析メソッドを使用し、結果を出力します。
   まず、フルーツの種類ごとにループをまわして（34行目）、さらに残りの項目ごとにループでまわして出力していきます（35行目）。
   そのループ処理の中で、各統計分析メソッドを呼び出します（36-41行目）。各メソッドの内容は上記のメソッド一覧を参照してください。

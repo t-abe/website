@@ -46,12 +46,12 @@ Java
  22 : 
  23 : 	@SuppressWarnings("serial")
  24 : 	public void execute() throws Exception {
- 25 : 		// ① Jubatus Serverへの接続設定
+ 25 : 		// 1. Jubatus Serverへの接続設定
  26 : 		StatClient stat = new StatClient(HOST, PORT, 5);
  27 : 
  28 : 		HashMap<String, String> fruit = new HashMap<String, String>();
  29 : 
- 30 : 		// ② 学習用データの準備
+ 30 : 		// 2. 学習用データの準備
  31 : 		try {
  32 : 			File csv = new File(FILE_PATH + CSV_NAME ); // CSVデータファイル
  33 : 
@@ -66,7 +66,7 @@ Java
  42 : 				for (int i=0; i<strAry.length; i++) {
  43 : 					fruit.put(CSV_COLUMN[i], strAry[i]);
  44 : 				}
- 45 : 				// ③ データの学習（学習モデルの更新）
+ 45 : 				// 3. データの学習（学習モデルの更新）
  46 : 				stat.push(NAME, fruit.get("fruit") + "dia" , Float.valueOf(fruit.get("diameter")));
  47 : 				stat.push(NAME, fruit.get("fruit") + "wei" , Float.valueOf(fruit.get("weight")));
  48 : 				stat.push(NAME, fruit.get("fruit") + "pri" , Float.valueOf(fruit.get("price")));
@@ -76,7 +76,7 @@ Java
  52 : 			stat.save(NAME, "stat.dat");
  53 : 			stat.load(NAME, "stat.dat");
  54 : 
- 55 : 			// ④ 結果の出力
+ 55 : 			// 4. 結果の出力
  56 : 			for (String fr : new ArrayList<String>(3) {{add("orange");add("apple");add("melon");}}) {
  57 : 				for ( String par : new ArrayList<String>(3) {{add("dia");add("wei");add("pri");}}) {
  58 : 					System.out.print("sum : " + fr +  par + " " + stat.sum(NAME, fr + par) + "\n");
@@ -157,18 +157,22 @@ Java
  各メソッドの最初のパラメタnameは、タスクを識別するZooKeeperクラスタ内でユニークな名前である。 スタンドアロン構成では、空文字列 ("") を指定する。
 
  1. Jubatus Serverへの接続設定
+
   Jubatus Serverへの接続を行います（26行目）。
   Jubatus ServerのIPアドレス、Jubatus ServerのRPCポート番号、接続待機時間を設定します。
   
  2. 学習用データの準備
+
   StatClientでは、項目名と値をpushメソッドに与えることで、学習が行われます。
   今回はサンプル用に作成した"フルーツの種類"・"直径"・"重さ"・"価格"の情報を持つCSVファイルを元に学習用データを作成していきます。
   まず、学習用データの元となるCSVファイルを読み込みます。 ここでは、FileReaderとBuffererdReaderを利用して1行ずつループで読み込んで処理します（32-49行目）。 CSVファイルなので、取得した1行を’,’で分割し要素ごとに分けます（40行目）。 定義したCSVファイルの項目リスト（CSV_COLUMN）を用い、項目名と値をmapに詰めていきます（42-44行目）。
   
  3. データの学習（学習モデルの更新）
-  StatClientのpushメソッドに②で作成したデータに項目名を付けて渡します（46-48行目）。ここでの項目名は"直径"の場合、フルーツの種類＋"dia"という形にして、"重さ"・"価格"についても同じようにpushメソッドを呼び出します。
+
+  StatClientのpushメソッドに2. で作成したデータに項目名を付けて渡します（46-48行目）。ここでの項目名は"直径"の場合、フルーツの種類＋"dia"という形にして、"重さ"・"価格"についても同じようにpushメソッドを呼び出します。
   
  4. 結果の出力
+
   StatClientの各統計分析メソッドを使用し、結果を出力します。
   まず、フルーツの種類ごとにループをまわして（56行目）、さらに残りの項目ごとにループでまわして出力していきます（57行目）。
   そのループ処理の中で、各統計分析メソッドを呼び出します（58-63行目）。各メソッドの内容は上記のメソッド一覧を参照してください。
