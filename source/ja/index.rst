@@ -34,7 +34,7 @@ Table of Contents
    quickstart
    overview/Summary
    tutorial
-   Cluster_Management
+   distribute_mode
    documentation
    references
    howtocontribute
