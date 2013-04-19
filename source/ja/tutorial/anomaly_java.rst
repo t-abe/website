@@ -162,10 +162,10 @@ Java
  113 : 	};
  114 : 
  115 : 	public void execute() throws Exception {
- 116 : 		// ① Jubatus Serverへの接続設定
+ 116 : 		// 1. Jubatus Serverへの接続設定
  117 : 		AnomalyClient client = new AnomalyClient(HOST, PORT, 5);
  118 : 
- 119 : 		// ② 学習用データの準備
+ 119 : 		// 2. 学習用データの準備
  120 : 		Datum datum = null;
  121 : 		TupleStringFloat result = null;
  122 : 
@@ -196,10 +196,10 @@ Java
  147 : 				// datumを作成
  148 : 				datum = makeDatum(strList, doubleList);
  149 : 
- 150 : 				// ③ データの学習（学習モデルの更新）
+ 150 : 				// 3. データの学習（学習モデルの更新）
  151 : 				result = client.add(NAME, datum);
  152 : 
- 153 : 				// ④ 結果の出力
+ 153 : 				// 4. 結果の出力
  154 : 				if ( !(Float.isInfinite(result.second)) && result.second != 1.0) {
  155 : 					System.out.print( "('" + result.first + "', " + result.second + ") " + strAry[strAry.length -1] + "\n" );
  156 : 				}
@@ -317,9 +317,9 @@ Java
   
  3. データの学習（学習モデルの更新）
 
-  AnomalyClientのaddメソッドに②で作成したデータを渡します（151行目）。
+  AnomalyClientのaddメソッドに2. で作成したデータを渡します（151行目）。
   addメソッドの第1引数は、タスクを識別するZookeeperクラスタ内でユニークな名前を指定します。（スタンドアロン構成の場合、空文字（""）を指定）
-  第2引数として、先ほど②で作成したDatumを指定します。
+  第2引数として、先ほど2. で作成したDatumを指定します。
   戻り値として、tuple<string, float>型で点IDと異常値を返却します。
   
  4. 結果の出力
