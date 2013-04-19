@@ -26,40 +26,98 @@ Jubatusには3種類のノードが存在します。分析を行うサーバノ
 
 管理ノードはサーバノードの管理を行い、サーバノードの死活監視やクライアントノードからの問い合わせを処理します。また管理ノード自体も分散協調動作をし、耐障害性を確保しています。
 
+ここでは、classifierを例に解説します。
 
 | 
 
 *パターン1*
 
-Jubatusの最も基本的なシステム構成は、以下の図に示すような単一のJubatusクライアントと単一のJubatusサーバの組み合わせとなります。
+Jubatusの最も基本的なシステム構成は、以下の図に示すような単一のJubatusクライアントと単一のJubatusサーバ(jubaclassifier)の組み合わせとなります。
 
-.. image:: ../images/single_single.png
+.. blockdiag::
 
+    blockdiag single_single {
+      group classifier{
+      color = "#77FF77"
+      jubaclassifier;
+      }
 
-| 
+      group client{
+      color = "#FF7777"
+      client;
+      }
+
+      client -> jubaclassifier;
+    }
+
 
 *パターン2*
 
 Jubatusではサーバノード側の処理をスケールアウトさせるため、以下の図のように複数のサーバノードを使用した分散環境とし、分散処理を行うことができます。
-この際、ZooKeeperを用いて複数サーバノード間のプロセスを強調動作させる必要があります。
+複数サーバノード間のプロセスは、Zookeeperを用いて協調動作します。
+クライアントは、jubaclassifier_keeperと呼ばれるプロセスにアクセスしますが、jubaclassifier_keeperはjubaclassifierと同じインターフェイスを持つように設計されています。そのため、クライアントは後ろで分散しているかどうかを気にする必要がありません。
 
-.. image:: ../images/single_multi.png
+.. blockdiag::
 
+    blockdiag single_multi {
+      group classifier{
+      color = "#77FF77"
+      jubaclassifier1;
+      jubaclassifier2;
+      jubaclassifier3;
+      }
 
+      group client{
+      color = "#FF7777"
+      client;
+      }
+
+      group keeper{
+      color = "#7777FF"
+      jubaclassifier_keeper;
+      }
+      client -> jubaclassifier_keeper -> jubaclassifier1, jubaclassifier2, jubaclassifier3;
+    }
 | 
 
 *パターン3*
 
-クライアントノードからKeeperに対してクエリーを投げることで、複数のサーバノードで分散して学習や分析を行うことができます。
-Keeperでは、クライアントノードからのクエリーを適切な（1台または複数台の）サーバノードに中継します。
-クライアントノードは、接続先が単一のサーバノードであるか、Keeperであるかを意識する必要がありません。
-
 Jubatusでは、データ量が膨大である、データソースが離れているなどの理由でクライアントを分散させることも可能です。
-この場合は、以下の図のように複数のKeeperを実行して、それぞれのクライアントに異なるKeeperを割り当てることになります。
+この場合は、以下の図のように複数のクライアントに対してそれぞれjubaclassifier_keeperを実行してください。
 
-.. image:: ../images/multi_multi.png
+.. blockdiag::
 
+    blockdiag multi_multi {
+      group classifier{
+      color = "#77FF77"
+      jubaclassifier1; jubaclassifier2; jubaclassifier3
+      }
 
+      group client{
+      color = "#FF7777"
+      client1;
+      client2;
+      client3;
+      }
+
+      group keeper{
+      color = "#7777FF"
+      jubaclassifier_keeper1;
+      jubaclassifier_keeper2;
+      jubaclassifier_keeper3;
+      }
+      
+      client1 -> jubaclassifier_keeper1 -> jubaclassifier1;
+                 jubaclassifier_keeper1 -> jubaclassifier2;
+                 jubaclassifier_keeper1 -> jubaclassifier3;
+      client2 -> jubaclassifier_keeper2 -> jubaclassifier1;
+                 jubaclassifier_keeper2 -> jubaclassifier2;
+                 jubaclassifier_keeper2 -> jubaclassifier3;
+      client3 -> jubaclassifier_keeper3 -> jubaclassifier1;
+                 jubaclassifier_keeper3 -> jubaclassifier2;
+                 jubaclassifier_keeper3 -> jubaclassifier3;
+      
+      }
 | 
 
 *システム構成による分析精度・処理性能の違い*
@@ -80,7 +138,7 @@ Jubatusでは、データ量が膨大である、データソースが離れて�
  |               |                                 | パターン2に比べ、性能が高い     |
  +---------------+---------------------------------+---------------------------------+
 
-
+パターン2でクライアント側がボトルネックになっていたり、分散している場合にパターン3を使う、と考えてください。
 | 
 
 *推奨するプロセス配置構成について*
@@ -93,14 +151,9 @@ Jubatusを高い信頼性のもとで提供するためには、分散環境で�
 ..
 
 
- ・ Jubatus Keepers
-  運用の容易さ、アプリケーションの実装の容易さから、クライアントアプリケーションと1:1の構成とし、クライアントアプリケーションと共にスケールする運用を推奨します。
-   
-  クライアントアプリケーションからKeeperへ通信できない場合（プロセスがダウンしているなど）に対しては、提供するサービスに応じて信頼性を保証する方法を検討する必要があります。例えば、以下のようなことが考えられます。
-
-  1. Keeper プロセスを監視し、Keeperと通信できない場合は、クライアントアプリケーションへのユーザからのアクセスを遮断する。
-    
-  2. 別のKeeperとの通信へ切り替える。
+ ・ jubaclassifier_keeper
+  運用の容易さ、アプリケーションの実装の容易さから、クライアントアプリケーションと1:1の構成とし、クライアントアプリケーションと同一のサーバで動作させることを推奨します。   
+  クライアントアプリケーションからjubaclassifier_keeperへ通信できない場合（プロセスがダウンしているなど）に対して、再度プロセスを起動し直すなどの制御が必要になるためです。
 
  ・ Jubatus Servers
   --name で同じ名前を指定することで、複数のサーバプロセスが協調動作します。Jubatusは、サーバプロセスが1つでも動作している限り、利用可能です。
@@ -110,7 +163,7 @@ Jubatusを高い信頼性のもとで提供するためには、分散環境で�
   Jubatusはすべてのデータをメモリ上で処理するという特徴があります。マシンのリソース(特にメモリ)が不足しないよう、サーバプロセスの配置には注意する必要があります。
 
  ・ZooKeeper
-  Jubatusを分散環境で動作させる際、ZooKeeperが利用できない状況は致命的です。ZooKeeperを高い信頼性で動作させるために、以下のことを注意します。詳細はZooKeeperのドキュメントを参照して下さい。
+  Jubatusを分散環境で動作させる際、必ずZooKeeperが利用できる必要があります。ZooKeeperを高い信頼性で動作させるために、以下のことを注意します。詳細はZooKeeperのドキュメントを参照して下さい。
  
    1. 奇数台のマシンによるクラスタ構成(アンサンブル)で運用します。
    
