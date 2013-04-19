@@ -8,7 +8,7 @@ Contents:
    :maxdepth: 1
    
    feature
-   machine_Learning
+   machine_learning
    architecture
    mix
 
