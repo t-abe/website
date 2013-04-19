@@ -148,21 +148,59 @@ Jubatusを高い信頼性のもとで提供するためには、分散環境で�
 
 .. image:: ../images/process_configuration.png
 
+
+.. blockdiag::
+
+    blockdiag multi_multi {
+      group classifier{
+      color = "#77FF77"
+      jubaclassifier1; jubaclassifier2; jubaclassifier3
+      }
+
+      group client{
+      color = "#FF7777"
+      client1;
+      client2;
+      client3;
+      }
+
+      group keeper{
+      color = "#7777FF"
+      jubaclassifier_keeper1;
+      jubaclassifier_keeper2;
+      jubaclassifier_keeper3;
+      }
+      
+      client1 -> jubaclassifier_keeper1 -> jubaclassifier1;
+                 jubaclassifier_keeper1 -> jubaclassifier2;
+                 jubaclassifier_keeper1 -> jubaclassifier3;
+      client2 -> jubaclassifier_keeper2 -> jubaclassifier1;
+                 jubaclassifier_keeper2 -> jubaclassifier2;
+                 jubaclassifier_keeper2 -> jubaclassifier3;
+      client3 -> jubaclassifier_keeper3 -> jubaclassifier1;
+                 jubaclassifier_keeper3 -> jubaclassifier2;
+                 jubaclassifier_keeper3 -> jubaclassifier3;
+      
+      }
+    }
 ..
 
 
- ・ jubaclassifier_keeper
+ - Jubatus Keeper
+  jubaXXX_keeperという名前の実行ファイルの総称をJubatus Keeperと表記します。
   運用の容易さ、アプリケーションの実装の容易さから、クライアントアプリケーションと1:1の構成とし、クライアントアプリケーションと同一のサーバで動作させることを推奨します。   
-  クライアントアプリケーションからjubaclassifier_keeperへ通信できない場合（プロセスがダウンしているなど）に対して、再度プロセスを起動し直すなどの制御が必要になるためです。
+  クライアントアプリケーションからJubatus Keeperへ通信できない場合（プロセスがダウンしているなど）に対して、再度プロセスを起動し直すなどの制御が必要になるためです。
 
- ・ jubaclassifier
+ - Jubatus Server
+  jubaXXXという名前の実行ファイルをJubatus Serverと表記します。
   --name で同じ名前を指定することで、複数のサーバプロセスが協調動作します。Jubatusは、サーバプロセスが1つでも動作している限り、利用可能です。
 
   上の図では、マシンのN 台に障害が発生した場合でも、すべてのインスタンスが利用可能なよう、N+1台のマシンに分散してプロセスを配置しています。
 
   Jubatusはすべてのデータをメモリ上で処理するという特徴があります。マシンのリソース(特にメモリ)が不足しないよう、サーバプロセスの配置には注意する必要があります。
 
- ・ZooKeeper
+ - ZooKeeper
+
   Jubatusを分散環境で動作させる際、必ずZooKeeperが利用できる必要があります。ZooKeeperを高い信頼性で動作させるために、以下のことを注意します。詳細はZooKeeperのドキュメントを参照して下さい。
  
    1. 奇数台のマシンによるクラスタ構成(アンサンブル)で運用します。
