@@ -33,14 +33,14 @@ Python
  09 : 
  10 : if __name__ == '__main__':
  11 : 
- 12 :   # ① Jubatus Serverへの接続設定
+ 12 :   # 1. Jubatus Serverへの接続設定
  13 :   stat = client.stat("127.0.0.1",9199)
  14 : 
- 15 :   # ② 学習用データの準備
+ 15 :   # 2. 学習用データの準備
  16 :   for line in open('./fruit.csv'):
  17 :     fruit, diameter, weight , price = line[:-1].split(',')
  18 :     
- 19 :     # ③ データの学習（学習モデルの更新）
+ 19 :     # 3. データの学習（学習モデルの更新）
  20 :     stat.push(NAME, fruit+"dia", float(diameter))
  21 :     stat.push(NAME, fruit+"wei", float(weight))
  22 :     stat.push(NAME, fruit+"pri", float(price))
@@ -48,7 +48,7 @@ Python
  24 :   stat.save(NAME, "stat.dat")
  25 :   stat.load(NAME, "stat.dat")
  26 : 
- 27 :   # ④ 結果の出力
+ 27 :   # 4. 結果の出力
  28 :   for fr in ["orange", "apple","melon"]:
  29 :     for par in ["dia","wei", "pri"]:
  30 :       print "sum :",fr+par,stat.sum(NAME, fr+par)
@@ -119,7 +119,7 @@ Python
   まず、学習用データの元となるCSVファイルを読み込みます。 ここでは、CSVファイルを1行ずつループで読み込んで処理します（15-22行目）。 
   
  3. データの学習（学習モデルの更新）
-  StatClientのpushメソッドに②で作成したデータに項目名を付けて渡します（20-22行目）。ここでの項目名は"直径"の場合、フルーツの種類＋"dia"という形にして、"重さ"・"価格"についても同じようにpushメソッドを呼び出します。
+  StatClientのpushメソッドに2.で作成したデータに項目名を付けて渡します（20-22行目）。ここでの項目名は"直径"の場合、フルーツの種類＋"dia"という形にして、"重さ"・"価格"についても同じようにpushメソッドを呼び出します。
   
  4. 結果の出力
   StatClientの各統計分析メソッドを使用し、結果を出力します。

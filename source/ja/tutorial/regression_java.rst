@@ -94,10 +94,10 @@ Java
  051 : 		};
  052 : 
  053 : 	public void update(String cvsName) throws Exception {
- 054 : 		// ①Jubatus Serverへの接続設定
+ 054 : 		// 1.Jubatus Serverへの接続設定
  055 : 		RegressionClient client = new RegressionClient(HOST, PORT, 5);
  056 : 
- 057 : 		// ②学習用データの準備
+ 057 : 		// 2.学習用データの準備
  058 : 		List<TupleFloatDatum> trainData = new ArrayList<TupleFloatDatum> ();
  059 : 		Datum datum = null;
  060 : 
@@ -145,7 +145,7 @@ Java
  102 : 			// 学習データをシャッフル
  103 : 			Collections.shuffle(trainData);
  104 : 
- 105 : 			// ③データの学習（学習モデルの更新）
+ 105 : 			// 3.データの学習（学習モデルの更新）
  106 : 			int trainCount = client.train( NAME, trainData);
  107 : 
  108 : 			System.out.print("train ... " + trainCount + "\n");
@@ -164,7 +164,7 @@ Java
  121 : 	public void analyze(String yamlName) throws Exception {
  122 : 		RegressionClient client = new RegressionClient(HOST, PORT, 5);
  123 : 
- 124 : 		// ④推定用データの準備
+ 124 : 		// 4.推定用データの準備
  125 : 		List<Datum> datumList = new ArrayList<Datum> ();
  126 : 		// 結果リスト
  127 : 		List<Float> result = new ArrayList<Float> ();
@@ -176,7 +176,7 @@ Java
  133 : 			// 推定用データ作成
  134 : 			datumList.add(makeDatum(hash));
  135 : 
- 136 : 			// ⑤学習モデルに基づく推定
+ 136 : 			// 5.学習モデルに基づく推定
  137 : 			result.addAll(client.estimate( NAME, datumList));
  138 : 
  139 : 			// 結果をBigDecimal型にする
@@ -184,7 +184,7 @@ Java
  141 : 			// 少数第2位で四捨五入
  142 : 			BigDecimal bd2 = bd.setScale(1, BigDecimal.ROUND_HALF_UP);
  143 : 
- 144 : 			// ⑥結果の出力
+ 144 : 			// 6.結果の出力
  145 : 			System.out.print("rent .... " + bd2 );
  146 : 
  147 : 		} catch (FileNotFoundException e) {
@@ -432,7 +432,7 @@ Java
 
   2.の工程で作成した学習用データを、trainメソッドに渡すことで学習が行われます（106行目）。
   trainメソッドの第1引数は、タスクを識別するZookeeperクラスタ内でユニークな名前を指定します。（スタンドアロン構成の場合、空文字（""）を指定）
-  第2引数として、先ほど②で作成したtrainDataを指定します。
+  第2引数として、先ほど2.で作成したtrainDataを指定します。
   戻り値として、学習した件数を返却します。
 
  4.推定用データの準備
@@ -442,9 +442,9 @@ Java
   YAML（ヤムル）とは、構造化データやオブジェクトを文字列にシリアライズ（直列化）するためのデータ形式の一種です。
   
   あらかじめ作成したYAMLファイル（myhome.yml）を読み込むとHashMapとして取得できます（131行目）。
-  取得したHashMapを用い、②でDatumを作成したのと同じ様にprivateメソッド「makeDatum」で作成します。
+  取得したHashMapを用い、2.でDatumを作成したのと同じ様にprivateメソッド「makeDatum」で作成します。
   
-  ただし、ここで使用する「makeDatum」は引数がHashMapとなっているので、②で使用したものと結果は同じですが処理が異なります（187-223行目）。
+  ただし、ここで使用する「makeDatum」は引数がHashMapとなっているので、2.で使用したものと結果は同じですが処理が異なります（187-223行目）。
   また、推定用のデータなので全項目分を作成する必要はありません。条件としたい項目のみ作成します。
   
   作成したDatumを推定用データのListに追加し、RegressionClientのestimateメソッドに与えることで、推定が行われます。

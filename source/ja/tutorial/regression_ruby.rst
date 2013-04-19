@@ -67,13 +67,13 @@ Ruby
  24 :   opt.parse!(ARGV)
  25 : end
  26 : 
- 27 : # ① Jubatus Serverへの接続
+ 27 : # 1. Jubatus Serverへの接続
  28 : client = Jubatus::Regression::Client::Regression.new($host, $port)
  29 : 
  30 : # train
  31 : if args.has_key?(:traindata) then
  32 : 
- 33 :   # ② 学習用データの準備
+ 33 :   # 2. 学習用データの準備
  34 :   num = 0
  35 :   
  36 :   CSV.foreach(args[:traindata].to_s, "r") do |traindata|
@@ -99,7 +99,7 @@ Ruby
  56 :     d = Jubatus::Regression::Datum.new(string_values, num_values)
  57 :     train_data = [[rent.to_f, d]]
  58 : 
- 59 :     # ③ データの学習（学習モデルの更新）
+ 59 :     # 3. データの学習（学習モデルの更新）
  60 :     client.train('', train_data)
  61 :   end
  62 : 
@@ -109,7 +109,7 @@ Ruby
  66 : end
  67 : 
  68 : # anaylze
- 69 : # ④ 推定用データの準備
+ 69 : # 4. 推定用データの準備
  70 : File.open(args[:analyzedata].to_s) do |analyzedata|
  71 : 
  72 :   YAML.load_documents(analyzedata) do |myhome|
@@ -124,9 +124,9 @@ Ruby
  81 :     ]
  82 :     d = Jubatus::Regression::Datum.new(string_values, num_values)
  83 :     analyze_data = [d]
- 84 :     # ⑤ 学習モデルに基づく推定
+ 84 :     # 5. 学習モデルに基づく推定
  85 :     result = client.estimate('', analyze_data)
- 86 :     # ⑥ 結果の出力
+ 86 :     # 6. 結果の出力
  87 :     print 'rent ....', result[0].round(1)
  88 :   end
  89 : end
@@ -202,7 +202,7 @@ Ruby
 
  2. 学習用データの準備
 
-  このサンプルでは、オプションとして"-t"を指定しCSVファイルパスを指定した場合のみ、②～③の学習を行います。
+  このサンプルでは、オプションとして"-t"を指定しCSVファイルパスを指定した場合のみ、2.～3.の学習を行います。
   オプションが指定された場合の、学習用データ作成の手順は下記の流れで行います。
   
   RegressionClientでは、list<tuple<float, datum>>のListを学習用データとして作成し、RegressionClientのtrainメソッドに与えることで、学習が行われます。
