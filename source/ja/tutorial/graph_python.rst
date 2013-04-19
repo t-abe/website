@@ -98,18 +98,18 @@ Python
  70 :         print "%s\t%s" % (stations[station], station)
  71 : 
  72 : if __name__ == '__main__':
- 73 :     # ①Jubatus Server への接続設定
+ 73 :     # 1. Jubatus Server への接続設定
  74 :     c = client.graph(host, port)
  75 : 
- 76 :     # ②プリセットクエリーを登録
+ 76 :     # 2. プリセットクエリーを登録
  77 :     pq = types.preset_query([], [])
  78 :     c.add_shortest_path_query(instance_name, pq)
  79 : 
- 80 :     # ③グラフの作成
+ 80 :     # 3. グラフの作成
  81 :     create_graph(c, get_station_join(11302)) # 山手線
  82 :     create_graph(c, get_station_join(11312)) # 中央線
  83 : 
- 84 :     # ④駅IDの表示
+ 84 :     # 4. 駅IDの表示
  85 :     print "=== Station IDs ==="
  86 :     print_stations()
 
@@ -131,17 +131,17 @@ Python
  09 : instance_name = ''
  10 : 
  11 : def search_route(from_id, to_id):
- 12 :     # ①Jubatus Server への接続設定
+ 12 :     # 1. Jubatus Server への接続設定
  13 :     c = client.graph(host, port)
  14 : 
- 15 :     # ②クエリーの準備
+ 15 :     # 2. クエリーの準備
  16 :     pq = types.preset_query([], [])
  17 :     spreq = types.shortest_path_query(from_id, to_id, 100, pq)
  18 :     
- 19 :     # ③最短経路を計算
+ 19 :     # 3. 最短経路を計算
  20 :     stations = c.get_shortest_path(instance_name, spreq)
  21 : 
- 22 :     # ④結果の表示
+ 22 :     # 4. 結果の表示
  23 :     print "Pseudo-Shortest Path (hops) from %s to %s:" % (from_id, to_id)
  24 :     for station in stations:
  25 :         node = c.get_node(instance_name, station)
@@ -184,19 +184,22 @@ Python
 
  create_graph.pyでは、山手線と中央線の接続を表すグラフを作成します。Graphのクライアントプログラムは、jubatus.graphクラス内で定義されているGraphClientクラスを利用して作成します。サンプルで使用するメソッドは、以下の5つです。
 
- ① Jubatus Serverへの接続設定
+ 1. Jubatus Serverへの接続設定
+
   Jubatus Serverへの接続を行います（74行目）。
   Jubatus ServerのIPアドレス，Jubatus ServerのRPCポート番号を設定します。
   
- ② プリセットクエリーを登録
+ 2. プリセットクエリーを登録
+
   最短経路を計算するために、クエリーをあらかじめadd_shortest_path_queryメソッドで登録しておく必要があります。
   そのためのクエリーを作成します(77行目)。
   add_shortest_path_queryメソッドで作成したクエリーを登録します(78行目)。
   
- ③ グラフの作成
+ 3. グラフの作成
+
   山手線と中央線の接続を表すグラフを作成します。
   ここでは、create_graphメソッドを呼び出します(81, 82行目)。
-  create_graphメソッドの第1引数は①で作成したクライアントです。
+  create_graphメソッドの第1引数は 1. で作成したクライアントです。
   第2引数には get_station_joinメソッドの戻り値を指定します。
   
   get_station_joinメソッドでは接続する2駅を組み合わせたリストを作成します。
@@ -246,49 +249,54 @@ Python
   上記で作成したリストを用いて、グラフを作成します(44-57行目)。
   create_graphメソッドでは、以下の作業を行います。
   
-   ③－1.駅情報の追加と駅IDの取得
+   3-1. 駅情報の追加と駅IDの取得
     グラフ内にノードを追加します。ここでのノードは駅に相当します。（例. 品川駅、御茶ノ水駅、東京駅など）
     
-   ③－2.追加した2駅の相互にエッジを張る
+   3-2. 追加した2駅の相互にエッジを張る
     登録した駅から隣接する駅へエッジを張ります。ここでのエッジは線路に相当します。（例.原宿⇒渋谷など）
     
-  ③－1.駅情報の追加と駅IDの取得
+  3-1. 駅情報の追加と駅IDの取得
    取得したリストの1要素から隣接する2駅station1とstation2をそれぞれノードとしてグラフ内に追加するため、add_stationメソッドを呼び出します（47, 48行目）。
    add_stationメソッドではマップstationsに、引数に指定した駅が含まれているかを確認し、含まれている場合はその駅のID nodeIdを返却し、含まれない場合は新たにノードを登録して駅名とnodeIdをstationsに格納した後にnodeIdを返却します（59-66行目）。
    ノードの登録はcreate_nodeメソッドとupdate_nodeメソッドで行います。
    まず、create_nodeメソッドを、引数にタスクを識別するZooKeeperクラスタ内でユニークな名前nameを指定して呼び出し、その戻り値をnodeIdとします(63行目)。
    そしてupdate_nodeメソッドで、63行目で作成したノードの属性を更新します(64行目)。
    
-  ③－2.追加した2駅の相互にエッジを張る
+  3-2. 追加した2駅の相互にエッジを張る
    add_stationメソッドで隣接する2駅station1とstation2を追加した後に、station1からstation2へ向けたエッジとstation2からstation1へ向けたエッジを張ります（51-54行目）。
    エッジを張るためにはcreate_edgeメソッドを利用します。
    第2引数に接続元のnodeIDを指定し、第3引数には接続元と接続先のnodeIDを格納したエッジを指定します。
    
   57行目のupdate_indexメソッドはmixをローカルで実行するものです。分散環境では利用しないでください。
   
- ④駅IDの表示
-  ③-1で駅名と駅ID(nodeID)をstationsに格納しました。ここでは駅名を駅IDの昇順に並び替えて表示しています(68-70行目)。
+ 4. 駅IDの表示
+
+  3-1.で駅名と駅ID(nodeID)をstationsに格納しました。ここでは駅名を駅IDの昇順に並び替えて表示しています(68-70行目)。
   
  **search_route.py**
  
  search_route.pyでは、create_graph.pyで作成したグラフから2駅間の最短経路を計算します。
  使用するメソッドは、最短経路を計算するためのget_shortest_pathメソッドです。
   
-  ① Jubatus Serverへの接続設定
+  1. Jubatus Serverへの接続設定
+
    Jubatus Serverへの接続を行います（13行目）。
    Jubatus ServerのIPアドレス，Jubatus ServerのRPCポート番号を設定します。
    
-  ②クエリーの準備
+  2. クエリーの準備
+
    最短経路を計算するためのクエリーを準備します(16, 17行目)。
    最短経路を計算するためのget_shortest_pathメソッドに必要なshortest_path_queryを作成します(17行目)。
    types.shortest_path_queryの第1引数に接続元の駅ID、第2引数に接続先の駅IDを設定します。第3引数で指定したホップ以内に発見できなかった場合、結果は切り詰められます。
    またクエリーはあらかじめadd_shortest_path_queryで登録しておく必要があります。
    
-  ③最短経路の計算
-   ②で作成したshortest_path_queryを指定して、get_shortest_pathを呼び出し、最短経路の計算をします(20行目)。
+  3. 最短経路の計算
+
+   2.で作成したshortest_path_queryを指定して、get_shortest_pathを呼び出し、最短経路の計算をします(20行目)。
    
-  ④結果の表示
-   ③で取得した最短経路で通過する駅を駅IDと関連付けて表示しています(23-29行目)。
+  4. 結果の表示
+
+   3.で取得した最短経路で通過する駅を駅IDと関連付けて表示しています(23-29行目)。
 
 
 ------------------------------------
@@ -327,7 +335,7 @@ Jubatus 0.4.0 + Pythonクライアントをインストールしてください�
  147     御茶ノ水
  ```
 
- 駅名に対応する駅ID(グラフ上のnode ID) が出力されます。
+駅名に対応する駅ID(グラフ上のnode ID) が出力されます。
 
 **経路の探索**
 

@@ -51,7 +51,7 @@ Ruby
  12 : require 'jubatus/recommender/types'
  13 : 
  14 : def update(client)
- 15 :   # ② 学習用データの準備
+ 15 :   # 2. 学習用データの準備
  16 :   CSV.open("dat/baseball.csv", "r") do |row|
  17 :     row.each do |item|
  18 :       pname, team, bave, games, pa, atbat, hit, homerun, runsbat, stolen, bob, hbp, strikeout, sacrifice, dp, slg, obp, ops, rc27, xr27 = item
@@ -80,13 +80,13 @@ Ruby
  41 :          ["XR27", xr27.to_f]
  42 :        ]
  43 :       )
- 44 :     # ③ データの学習（学習モデルの更新）
+ 44 :     # 3. データの学習（学習モデルの更新）
  45 :     client.update_row($name, pname, datum)
  46 :     end
  47 :   end
  48 : end
  49 : 
- 50 : # ① Jubatus Serverへの接続設定
+ 50 : # 1. Jubatus Serverへの接続設定
  51 : client = Jubatus::Recommender::Client::Recommender.new($host, $port)
  52 : 
  53 : update(client)
@@ -111,18 +111,18 @@ Ruby
  12 : require 'jubatus/recommender/types'
  13 : 
  14 : def analyze(client)
- 15 :   # ② 推薦用データの準備
+ 15 :   # 2. 推薦用データの準備
  16 :   CSV.open("dat/baseball.csv", "r") do |row|
  17 :     row.each do |item|
- 18 :       # ③ 学習モデルに基づく推薦
+ 18 :       # 3. 学習モデルに基づく推薦
  19 :       sr = client.similar_row_from_id($name, item[0], 4)
- 20 :       # ④ 結果の出力
+ 20 :       # 4. 結果の出力
  21 :       print ("player " + item[0] + " is similar to : " + sr[1][0]+ "," + sr[2][0] +","+ sr[3][0] + "\n")
  22 :     end
  23 :   end
  24 : end
  25 : 
- 26 : # ① Jubatus Serverへの接続設定
+ 26 : # 1. Jubatus Serverへの接続設定
  27 : client = Jubatus::Recommender::Client::Recommender.new($host, $port)
  28 : 
  29 : analyze(client)
@@ -164,16 +164,18 @@ Ruby
 
 **Update.rb**
 
- 3.3.3.5.1に記載したソースコードを用いて、学習と推薦の手順を説明します。
+ 学習と推薦の手順を説明します。
 
  Recommenderのクライアントプログラムは、jubatus.Recommenderクラス内で定義されているRecommenderClientクラスを利用して作成します。
  使用するメソッドは、1データ分の学習を行うupdate_rowメソッドと、与えられたデータから推薦を行うestimateメソッドの2つです。
 
- ① Jubatus Serverへの接続設定
+ 1. Jubatus Serverへの接続設定
+
   Jubatus Serverへの接続を行います（51行目）。
   Jubatus ServerのIPアドレス，Jubatus ServerのRPCポート番号，接続待機時間を設定します。
 
- ② 学習用データの準備
+ 2. 学習用データの準備
+
   Jubatus Serverに学習させるデータDatumを作成します。
   
   RecommenderClientでは、Datumを学習用データとして作成し、RecommenderClientのupdate_rowメソッドに与えることで、学習が行われます。
@@ -241,33 +243,37 @@ Ruby
   それぞれの要素を設定しDatumを作成します（16-40行目）。
   これで、1人分の選手のデータが入ったDatumの作成が完了しました。
 
- ③データの学習（学習モデルの更新）
-  ②の工程で作成した学習用データを、update_rowメソッドに渡すことで学習が行われます（45行目）。
+ 3. データの学習（学習モデルの更新）
+
+  2.の工程で作成した学習用データを、update_rowメソッドに渡すことで学習が行われます（45行目）。
   update_rowメソッドの第1引数は、タスクを識別するZookeeperクラスタ内でユニークな名前を指定します。（スタンドアロン構成の場合、空文字（""）を指定）
   第2引数は、IDで学習データ内でユニークな名前を指定します。ここでは選手の"名前"をIDとして使用します。
-  第3引数として、先ほど②で作成したDatumを指定します。
-  これで、選手1人分のデータの学習が完了しました。ループ処理で②と③をCSVの行数分繰り返し実行すれば、データの学習は完了します。
+  第3引数として、先ほど 2. で作成したDatumを指定します。
+  これで、選手1人分のデータの学習が完了しました。ループ処理で 2. と 3. をCSVの行数分繰り返し実行すれば、データの学習は完了します。
 
 **Analyze.rb**
 
- ① Jubatus Serverへの接続設定
+ 1. Jubatus Serverへの接続設定
+
   Update.rbと同様のため省略。
   
- ②推薦用データの準備
+ 2. 推薦用データの準備
+
   推薦で必要なデータは先ほど学習でIDに指定した選手の"名前"になります。
   学習時と同じ要領で、カラムの1番目である"名前"を取得し、RecommenderClientのsimilar_row_from_idメソッドに与えることで、推薦が行われます。
 
-  
- ③学習モデルに基づく推薦
-  ②で取得した選手の"名前"を、similar_row_from_idメソッドに渡すことで、推薦結果のListを得ることができます（17行目）。
+ 3. 学習モデルに基づく推薦
+
+  2.で取得した選手の"名前"を、similar_row_from_idメソッドに渡すことで、推薦結果のListを得ることができます（17行目）。
   similar_row_from_idメソッドの第1引数は、タスクを識別するZookeeperクラスタ内でユニークな名前を指定します。（スタンドアロン構成の場合、空文字（""）を指定）
   第2引数に、"名前"を指定します。
   第3引数は、似ているタイプを近傍順にいくつ出力するかを指定します。ここでは、トップ3まで出力するので"4"を指定します。なぜ、"4"かというとトップは自身が出力される為です。
 
- ④結果の出力
-  ③で取得した、推薦結果のリストはsimilar_row_from_idメソッドの第3引数に"4"を指定したので、４つの要素を持ったListです。
+ 4. 結果の出力
+
+  3.で取得した、推薦結果のリストはsimilar_row_from_idメソッドの第3引数に"4"を指定したので、4 つの要素を持ったListです。
   Listの1番目は自分自身なので、Listの2番目から4番目までを結果として出力します。
-  Update.rbと同様、選手1人ずつループで処理し②～④を繰り返します。
+  Update.rbと同様、選手1人ずつループで処理し 2. ～ 4. を繰り返します。
 
 ------------------------------------
 サンプルプログラムの実行

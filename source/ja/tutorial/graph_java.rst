@@ -67,20 +67,20 @@ Java
  039 : 	}
  040 : 
  041 : 	private final void start() throws Exception {
- 042 : 		// ①Jubatus Serverへの接続設定
+ 042 : 		// 1. Jubatus Serverへの接続設定
  043 : 		GraphClient client = new GraphClient(HOST, PORT, 5);
  044 : 
- 045 : 		// ②プリセットクエリーを登録
+ 045 : 		// 2. プリセットクエリーを登録
  046 : 		PresetQuery pq = new PresetQuery();
  047 : 		pq.edge_query = new ArrayList<>();
  048 : 		pq.node_query = new ArrayList<>();
  049 : 		client.add_shortest_path_query(NAME, pq);
  050 : 
- 051 : 		// ③グラフの作成
+ 051 : 		// 3. グラフの作成
  052 : 		this.createGraph(client, this.getStationJoin(11302)); // 山手線
  053 : 		this.createGraph(client, this.getStationJoin(11312)); // 中央線
  054 : 
- 055 : 		// ④駅IDの表示
+ 055 : 		// 4. 駅IDの表示
  056 : 		System.out.println("=== Station IDs ===");
  057 : 		List<Map.Entry> entries = new ArrayList<Map.Entry>(stations.entrySet());
  058 : 		Collections.sort(entries, new Comparator() {
@@ -159,15 +159,15 @@ Java
  131 : 		return document;
  132 : 	}
  133 : 
- 134 : 	// ③グラフの作成
+ 134 : 	// 3. グラフの作成
  135 : 	private void createGraph(GraphClient client, List<StationJoin> stationJoin) {
  136 : 		// XMLファイルから取得し接続する2駅の組み合わせリスト分だけ繰り返す
  137 : 		for (StationJoin join : stationJoin) {
- 138 : 			// ③－1.駅情報の追加と駅IDの取得
+ 138 : 			// 3-1. 駅情報の追加と駅IDの取得
  139 : 			String s1_node_id = this.addStation(client, join.station1);
  140 : 			String s2_node_id = this.addStation(client, join.station2);
  141 : 
- 142 : 			// ③－2.追加した2駅の相互にエッジを張る
+ 142 : 			// 3-2. 追加した2駅の相互にエッジを張る
  143 : 			Edge edge1 = new Edge();
  144 : 			edge1.property = new HashMap<>();
  145 : 			edge1.source = s1_node_id;
@@ -228,10 +228,10 @@ Java
  13 : 	public static final String NAME = "trainRoute";
  14 : 
  15 : 	private final void start(String source, String target) throws Exception {
- 16 : 		// ①Jubatus Serverへの接続設定
+ 16 : 		// 1. Jubatus Serverへの接続設定
  17 : 		GraphClient client = new GraphClient(HOST, PORT, 5);
  18 : 
- 19 : 		// ②クエリーの準備
+ 19 : 		// 2. クエリーの準備
  20 : 		PresetQuery pq = new PresetQuery();
  21 : 		pq.edge_query = new ArrayList<>();
  22 : 		pq.node_query = new ArrayList<>();
@@ -242,10 +242,10 @@ Java
  27 : 		query.max_hop = 100;
  28 : 		query.query = pq;
  29 : 
- 30 : 		// ③最短経路を計算
+ 30 : 		// 3. 最短経路を計算
  31 : 		List<String> stations = client.get_shortest_path(NAME, query);
  32 : 
- 33 : 		// ④結果の表示
+ 33 : 		// 4. 結果の表示
  34 : 		System.out.println("Pseudo-Shortest Path (hops) from " + query.source + "to " + query.target);
  35 : 		for (String station : stations) {
  36 : 			Node node = client.get_node(NAME, station);
@@ -311,19 +311,22 @@ Java
  
   プリセットクエリーquery.queryにマッチする、query.sourceからquery.targetへの最短パスを(予め算出された値から)計算します。
 
- ① Jubatus Serverへの接続設定
+ 1. Jubatus Serverへの接続設定
+
   Jubatus Serverへの接続を行います（33行目）。
   Jubatus ServerのIPアドレス、Jubatus ServerのRPCポート番号、接続待機時間を設定します。
   
- ② プリセットクエリーを登録
+ 2. プリセットクエリーを登録
+
   最短経路を計算するために、クエリーをあらかじめadd_shortest_path_queryメソッドで登録しておく必要があります。
   そのためのクエリーPresetQueryを作成します(46行目)。pq.edge_queryとpq.node_queryにArrayListを宣言して格納します(47, 48行目）。
   add_shortest_path_queryメソッドで作成したクエリーを登録します(49行目)。
   
- ③ グラフの作成
+ 3. グラフの作成
+
   山手線と中央線の接続を表すグラフを作成します。
   ここでは、privateメソッド「createGraph」を呼び出します(52, 53行目)。
-  private メソッド「createGraph」の第1引数は①で作成したGraphClientです。
+  private メソッド「createGraph」の第1引数は 1. で作成したGraphClientです。
   第二引数にはprivateメソッド「getStationJoin」の戻り値を指定します。
   
   privateメソッド「getStationJoin」では接続する2駅を組み合わせたリストを作成します。
@@ -381,13 +384,13 @@ Java
   上記で作成したArrayList<StationJoin>を用いて、グラフを作成します(135-156行目)。
   privateメソッド「createGraph」では、以下の作業を行います。
   
-   ③－1.駅情報の追加と駅IDの取得
+   3-1. 駅情報の追加と駅IDの取得
     グラフ内にノードを追加します。ここでのノードは駅に相当します。（例. 品川駅、御茶ノ水駅、東京駅など）
     
-   ③－2.追加した2駅の相互にエッジを張る
+   3-2.追加した2駅の相互にエッジを張る
     登録した駅から隣接する駅へエッジを張ります。ここでのエッジは線路に相当します。（例.原宿⇒渋谷など）
     
-  ③－1.駅情報の追加と駅IDの取得
+  3-1. 駅情報の追加と駅IDの取得
    取得したリストの1要素から隣接する2駅station1とstation2をそれぞれノードとしてグラフ内に追加するため、privateメソッド「addStation」を呼び出します（139,140行目）。
    addStationメソッドではHashMap<String, String>型のインスタンス変数stationsに、引数に指定した駅が含まれているかを確認し、含まれている場合はその駅のID nodeIdを返却し、含まれない場合は新たにノードを登録して駅名とnodeIdをstationsに格納した後にnodeIdを返却します（158-174行目）。
    ノードの登録はGraphClientのcreate_nodeメソッドとupdate_nodeメソッドで行います(167-169行目)。
@@ -395,37 +398,42 @@ Java
    これでグラフ内にノードがひとつ追加されます。続いて、160行目で作成したHashMap<String, String> クラスのインスタンスpropertyにキーを"name"、バリューを登録する駅名として格納します(168行目)。
    そしてupdate_nodeメソッドで、167行目で作成したノードの属性をpropertyに更新します(169行目)。
    
-  ③－2.追加した2駅の相互にエッジを張る
+  3-2. 追加した2駅の相互にエッジを張る
    addStationメソッドで隣接する2駅station1とstation2を追加した後に、station1からstation2へ向けたエッジとstation2からstation1へ向けたエッジを張ります（143-152行目）。
    エッジを張るためにはcreate_edgeメソッドを利用します。
    第2引数に接続元のnodeIDを指定し、第3引数には、接続元と接続先のnodeIDを格納したEdgeクラスのインスタンスを指定します。
    
   154行目のupdate_indexメソッドはmixをローカルで実行するものです。分散環境では利用しないでください。
   
- ④駅IDの表示
-  ③-1で駅名と駅ID(nodeID)をstationsに格納しました。ここでは駅名を駅IDの昇順に並び替えて表示しています(56-68行目)。
+ 4. 駅IDの表示
+
+  3-1.で駅名と駅ID(nodeID)をstationsに格納しました。ここでは駅名を駅IDの昇順に並び替えて表示しています(56-68行目)。
   
  **SearchRoute.java**
  
  SearchRoute.javaでは、CreateGraph.javaで作成したグラフから2駅間の最短経路を計算します。
  使用するメソッドは、最短経路を計算するためのget_shortest_pathメソッドです。
   
-  ① Jubatus Serverへの接続設定
+  1. Jubatus Serverへの接続設定
+
    Jubatus Serverへの接続を行います（33行目）。
    Jubatus ServerのIPアドレス、Jubatus ServerのRPCポート番号、接続待機時間を設定します。
    
-  ②クエリーの準備
+  2. クエリーの準備
+
    最短経路を計算するためのクエリーを準備します(20-28行目)。
    最短経路を計算するためのget_shortest_pathメソッドに必要なShortestPathQueryを作成します(24行目)。
    ShortestPathQueryのメンバ変数sourceに接続元の駅ID(nodeId)、targetに接続先の駅ID(nodeId)を格納します。
    メンバ変数maxhopで指定したホップ以内に発見できなかった場合、結果は切り詰められます。
    またクエリーはあらかじめadd_shortest_path_queryで登録しておく必要があります。
    
-  ③最短経路の計算
-   ②で作成したShortestPathQueryを指定して、get_shortest_path(String name, ShortestPathQuery query)を呼び出し、最短経路の計算をします(31行目)。このメソッドでは、プリセットクエリーquery.queryにマッチする、query.sourceからquery.targetへの最短パスを(予め算出された値から) 計算することができます。
+  3. 最短経路の計算
+
+   2.で作成したShortestPathQueryを指定して、get_shortest_path(String name, ShortestPathQuery query)を呼び出し、最短経路の計算をします(31行目)。このメソッドでは、プリセットクエリーquery.queryにマッチする、query.sourceからquery.targetへの最短パスを(予め算出された値から) 計算することができます。
    
-  ④結果の表示
-   ③で取得した最短経路で通過する駅を駅IDと関連付けて表示しています(34-42行目)。
+  4. 結果の表示
+
+   3.で取得した最短経路で通過する駅を駅IDと関連付けて表示しています(34-42行目)。
 
 
 -------------------------------------

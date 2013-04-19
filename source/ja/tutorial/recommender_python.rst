@@ -47,9 +47,9 @@ Python
  08 : NAME = "recommender_baseball";
  09 : 
  10 : if __name__ == '__main__':
- 11 :     # ① Jubatus Serverへの接続設定
+ 11 :     # 1. Jubatus Serverへの接続設定
  12 :     recommender = client.recommender("127.0.0.1",9199)
- 13 :     # ② 学習用データの準備
+ 13 :     # 2. 学習用データの準備
  14 :     for line in open('dat/baseball.csv'):
  15 :         pname, team, bave, games, pa, atbat, hit, homerun, runsbat, stolen, bob, hbp, strikeout, sacrifice, dp, slg, obp, ops, rc27, xr27 = line[:-1].split(',')
  16 :         datum = types.datum(
@@ -77,7 +77,7 @@ Python
  38 :           ["XR27", float(xr27)]
  39 :         ]
  40 :         )
- 41 :         # ③ データの学習（学習モデルの更新）
+ 41 :         # 3. データの学習（学習モデルの更新）
  42 :         recommender.update_row(NAME, pname, datum)
  43 : 
 
@@ -95,14 +95,14 @@ Python
  08 : NAME = "recommender_baseball";
  09 : 
  10 : if __name__ == '__main__':
- 11 :     # ① Jubatus Serverへの接続設定
+ 11 :     # 1. Jubatus Serverへの接続設定
  12 :     recommender = client.recommender("127.0.0.1",9199)
- 13 :     # ② 推薦用データの準備
+ 13 :     # 2. 推薦用データの準備
  14 :     for line in open('dat/baseball.csv'):
  15 :       pname, team, bave, games, pa, atbat, hit, homerun, runsbat, stolen, bob, hbp, strikeout, sacrifice, dp, slg, obp, ops, rc27, xr27 = line[:-1].split(',')
- 16 :       # ③ 学習モデルに基づく推薦
+ 16 :       # 3. 学習モデルに基づく推薦
  17 :       sr = recommender.similar_row_from_id(NAME, pname , 4)
- 18 :       # ④ 結果の出力
+ 18 :       # 4. 結果の出力
  19 :       print "player ", pname,  " is similar to :", sr[1][0], sr[2][0], sr[3][0] 
  20 : 
 
@@ -142,16 +142,18 @@ Python
 
 **Update.py**
 
- 3.3.3.4.1に記載したソースコードを用いて、学習と推薦の手順を説明します。
+ 学習と推薦の手順を説明します。
 
  Recommenderのクライアントプログラムは、jubatus.Recommenderクラス内で定義されているRecommenderClientクラスを利用して作成します。
  使用するメソッドは、1データ分の学習を行うupdate_rowメソッドと、与えられたデータから推薦を行うestimateメソッドの2つです。
 
- ① Jubatus Serverへの接続設定
+ 1. Jubatus Serverへの接続設定
+
   Jubatus Serverへの接続を行います（33行目）。
   Jubatus ServerのIPアドレス，Jubatus ServerのRPCポート番号，接続待機時間を設定します。
 
- ② 学習用データの準備
+ 2. 学習用データの準備
+
   Jubatus Serverに学習させるデータDatumを作成します。
   
   RecommenderClientでは、Datumを学習用データとして作成し、RecommenderClientのupdate_rowメソッドに与えることで、学習が行われます。
@@ -219,33 +221,37 @@ Python
   types関数にて、引数にそれぞれの要素を設定しDatumを作成します（16-40行目）。
   これで、1人分の選手のデータが入ったDatumの作成が完了しました。
 
- ③データの学習（学習モデルの更新）
-  ②の工程で作成した学習用データを、update_rowメソッドに渡すことで学習が行われます（42行目）。
+ 3. データの学習（学習モデルの更新）
+
+  2.の工程で作成した学習用データを、update_rowメソッドに渡すことで学習が行われます（42行目）。
   update_rowメソッドの第1引数は、タスクを識別するZookeeperクラスタ内でユニークな名前を指定します。（スタンドアロン構成の場合、空文字（""）を指定）
   第2引数は、IDで学習データ内でユニークな名前を指定します。ここでは選手の"名前"をIDとして使用します。
-  第3引数として、先ほど②で作成したDatumを指定します。
-  これで、選手1人分のデータの学習が完了しました。ループ処理で②と③をCSVの行数分繰り返し実行すれば、データの学習は完了します。
+  第3引数として、先ほど 2. で作成したDatumを指定します。
+  これで、選手1人分のデータの学習が完了しました。ループ処理で 2. と 3. をCSVの行数分繰り返し実行すれば、データの学習は完了します。
 
 **Analyze.py**
 
- ① Jubatus Serverへの接続設定
+ 1. Jubatus Serverへの接続設定
+
   Update.pyと同様のため省略。
   
- ②推薦用データの準備
+ 2. 推薦用データの準備
+
   推薦で必要なデータは先ほど学習でIDに指定した選手の"名前"になります。
   学習時と同じ要領で、カラムの1番目である"名前"を取得し、RecommenderClientのsimilar_row_from_idメソッドに与えることで、推薦が行われます。
 
-  
- ③学習モデルに基づく推薦
-  ②で取得した選手の"名前"を、similar_row_from_idメソッドに渡すことで、推薦結果のListを得ることができます（17行目）。
+ 3. 学習モデルに基づく推薦
+
+  2.で取得した選手の"名前"を、similar_row_from_idメソッドに渡すことで、推薦結果のListを得ることができます（17行目）。
   similar_row_from_idメソッドの第1引数は、タスクを識別するZookeeperクラスタ内でユニークな名前を指定します。（スタンドアロン構成の場合、空文字（""）を指定）
   第2引数に、"名前"を指定します。
   第3引数は、似ているタイプを近傍順にいくつ出力するかを指定します。ここでは、トップ3まで出力するので"4"を指定します。なぜ、"4"かというとトップは自身が出力される為です。
 
- ④結果の出力
-  ③で取得した、推薦結果のリストはsimilar_row_from_idメソッドの第3引数に"4"を指定したので、４つの要素を持ったListです。
+ 4. 結果の出力
+
+  3.で取得した、推薦結果のリストはsimilar_row_from_idメソッドの第3引数に"4"を指定したので、4 つの要素を持ったListです。
   Listの1番目は自分自身なので、Listの2番目から4番目までを結果として出力します。
-  Update.pyと同様、選手1人ずつループで処理し②～④を繰り返します。
+  Update.pyと同様、選手1人ずつループで処理し 2. ～ 4. を繰り返します。
 
 ------------------------------------
 サンプルプログラムの実行

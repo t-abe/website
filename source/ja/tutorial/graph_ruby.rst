@@ -78,7 +78,7 @@ Ruby
  050 :   return join_list
  051 : end
  052 : 
- 053 : # ③グラフの作成
+ 053 : # 3. グラフの作成
  054 : def create_graph(c, join_list)
  055 :   for join in join_list do
  056 :     s1_node_id = add_station(c, join.station1)
@@ -105,7 +105,7 @@ Ruby
  077 :   return node_id
  078 : end
  079 : 
- 080 : # ④駅IDの表示
+ 080 : # 4. 駅IDの表示
  081 : def print_stations()
  082 :   @stations.to_a.sort{|a, b|
  083 :     (b[1] <=> a[1]) * 2 + (a[0] <=> b[0])
@@ -116,18 +116,18 @@ Ruby
  088 : end
  089 : 
  090 : 
- 091 : # ①Jubatus Serverへの接続設定
+ 091 : # 1.Jubatus Serverへの接続設定
  092 : c = Jubatus::Graph::Client::Graph.new($host, $port)
  093 : 
- 094 : # ②プリセットクエリーを登録
+ 094 : # 2. プリセットクエリーを登録
  095 : pq = Jubatus::Graph::Preset_query.new([], [])
  096 : c.add_shortest_path_query($name, pq)
  097 : 
- 098 : # ③グラフの作成
+ 098 : # 3. グラフの作成
  099 : create_graph(c, get_station_join(11302))
  100 : create_graph(c, get_station_join(11312))
  101 : 
- 102 : # ④駅IDの表示
+ 102 : # 4. 駅IDの表示
  103 : print ("=== Station IDs ===\n")
  104 : print_stations()
 
@@ -154,17 +154,17 @@ Ruby
  13 : require 'jubatus/graph/types'
  14 : 
  15 : def search_route(from_id, to_id)
- 16 :   # ①Jubatus Serverへの接続設定
+ 16 :   # 1. Jubatus Serverへの接続設定
  17 :   c = Jubatus::Graph::Client::Graph.new($host, $port)
  18 :   
- 19 :   # ②クエリーの準備
+ 19 :   # 2. クエリーの準備
  20 :   pq = Jubatus::Graph::Preset_query.new([], [])
  21 :   spreq = Jubatus::Graph::Shortest_path_query.new(from_id, to_id, 100, pq)
  22 : 
- 23 :   # ③最短経路を計算
+ 23 :   # 3. 最短経路を計算
  24 :   stations = c.get_shortest_path($name, spreq)
  25 : 
- 26 :   # ④結果の表示
+ 26 :   # 4. 結果の表示
  27 :   print ("Pseudo-Shortest Path (hops) from " + from_id + " to " + to_id + "\n")
  28 :   stations.each {|station|
  29 :     node = c.get_node($name, station)
@@ -210,19 +210,22 @@ Ruby
 
  create_graph.rbでは、山手線と中央線の接続を表すグラフを作成します。Graphのクライアントプログラムは、jubatus.graphクラス内で定義されているGraphClientクラスを利用して作成します。サンプルで使用するメソッドは、以下の5つです。
 
- ① Jubatus Serverへの接続設定
+ 1. Jubatus Serverへの接続設定
+
   Jubatus Serverへの接続を行います（92行目）。
   Jubatus ServerのIPアドレス，Jubatus ServerのRPCポート番号を設定します。
   
- ② プリセットクエリーを登録
+ 2. プリセットクエリーを登録
+
   最短経路を計算するために、クエリーをあらかじめadd_shortest_path_queryメソッドで登録しておく必要があります。
   そのためのクエリーを作成します(95行目)。
   add_shortest_path_queryメソッドで作成したクエリーを登録します(96行目)。
   
- ③ グラフの作成
+ 3. グラフの作成
+
   山手線と中央線の接続を表すグラフを作成します。
   ここでは、create_graphメソッドを呼び出します(99, 100行目)。
-  create_graphメソッドの第1引数は①で作成したクライアントです。
+  create_graphメソッドの第1引数は 1. で作成したクライアントです。
   第2引数には get_station_joinメソッドの戻り値を指定します。
   
   get_station_joinメソッドでは接続する2駅を組み合わせたリストを作成します。
@@ -272,49 +275,54 @@ Ruby
   上記で作成したリストを用いて、グラフを作成します(54-66行目)。
   create_graphメソッドでは、以下の作業を行います。
   
-   ③－1.駅情報の追加と駅IDの取得
+   3-1. 駅情報の追加と駅IDの取得
     グラフ内にノードを追加します。ここでのノードは駅に相当します。（例. 品川駅、御茶ノ水駅、東京駅など）
     
-   ③－2.追加した2駅の相互にエッジを張る
+   3-2. 追加した2駅の相互にエッジを張る
     登録した駅から隣接する駅へエッジを張ります。ここでのエッジは線路に相当します。（例.原宿⇒渋谷など）
     
-  ③－1.駅情報の追加と駅IDの取得
+  3-1. 駅情報の追加と駅IDの取得
    取得したリストの1要素から隣接する2駅station1とstation2をそれぞれノードとしてグラフ内に追加するため、add_stationメソッドを呼び出します（56, 57行目）。
    add_stationメソッドではハッシュstationsに、引数に指定した駅が含まれているかを確認し、含まれている場合はその駅のID nodeIdを返却し、含まれない場合は新たにノードを登録して駅名とnodeIdをstationsに格納した後にnodeIdを返却します（68-78行目）。
    ノードの登録はcreate_nodeメソッドとupdate_nodeメソッドで行います。
    まず、create_nodeメソッドを、引数にタスクを識別するZooKeeperクラスタ内でユニークな名前nameを指定して呼び出し、その戻り値をnodeIdとします(73行目)。
    そしてupdate_nodeメソッドで、73行目で作成したノードの属性を更新します(74行目)。
    
-  ③－2.追加した2駅の相互にエッジを張る
+  3-2. 追加した2駅の相互にエッジを張る
    add_stationメソッドで隣接する2駅station1とstation2を追加した後に、station1からstation2へ向けたエッジとstation2からstation1へ向けたエッジを張ります（59-62行目）。
    エッジを張るためにはcreate_edgeメソッドを利用します。
    第2引数に接続元のnodeIDを指定し、第3引数には接続元と接続先のnodeIDを格納したエッジを指定します。
    
   64行目のupdate_indexメソッドはmixをローカルで実行するものです。分散環境では利用しないでください。
   
- ④駅IDの表示
-  ③-1で駅名と駅ID(nodeID)をstationsに格納しました。ここでは駅名を駅IDの昇順に並び替えて表示しています(81-88行目)。
+ 4. 駅IDの表示
+
+  3-1.で駅名と駅ID(nodeID)をstationsに格納しました。ここでは駅名を駅IDの昇順に並び替えて表示しています(81-88行目)。
   
  **search_route.rb**
  
  search_route.rbでは、create_graph.rbで作成したグラフから2駅間の最短経路を計算します。
  使用するメソッドは、最短経路を計算するためのget_shortest_pathメソッドです。
   
-  ① Jubatus Serverへの接続設定
+  1. Jubatus Serverへの接続設定
+
    Jubatus Serverへの接続を行います（17行目）。
    Jubatus ServerのIPアドレス，Jubatus ServerのRPCポート番号を設定します。
    
-  ②クエリーの準備
+  2. クエリーの準備
+
    最短経路を計算するためのクエリーを準備します(20, 21行目)。
    最短経路を計算するためのget_shortest_pathメソッドに必要なshortest_path_queryを作成します(20行目)。
    types.shortest_path_queryの第1引数に接続元の駅ID、第2引数に接続先の駅IDを設定します。第3引数で指定したホップ以内に発見できなかった場合、結果は切り詰められます。
    またクエリーはあらかじめadd_shortest_path_queryで登録しておく必要があります。
    
-  ③最短経路の計算
-   ②で作成したshortest_path_queryを指定して、get_shortest_pathを呼び出し、最短経路の計算をします(24行目)。
+  3. 最短経路の計算
+
+   2.で作成したshortest_path_queryを指定して、get_shortest_pathを呼び出し、最短経路の計算をします(24行目)。
    
-  ④結果の表示
-   ③で取得した最短経路で通過する駅を駅IDと関連付けて表示しています(27-35行目)。
+  4. 結果の表示
+
+   3.で取得した最短経路で通過する駅を駅IDと関連付けて表示しています(27-35行目)。
 
 
 ------------------------------------

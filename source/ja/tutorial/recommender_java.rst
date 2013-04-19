@@ -112,10 +112,10 @@ Java
  073 : 		};
  074 : 
  075 : 	public void start() throws Exception {
- 076 : 		// ①Jubatus Serverへの接続設定
+ 076 : 		// 1. Jubatus Serverへの接続設定
  077 : 		RecommenderClient client = new RecommenderClient(HOST, PORT, 5);
  078 : 
- 079 : 		// ②学習用データの準備
+ 079 : 		// 2. 学習用データの準備
  080 : 		Datum datum = null;
  081 : 
  082 : 		try {
@@ -144,7 +144,7 @@ Java
  105 : 				}
  106 : 				// datumを作成
  107 : 				datum = makeDatum(strList, doubleList);
- 108 : 				// ③データの学習（学習モデルの更新）
+ 108 : 				// 3. データの学習（学習モデルの更新）
  109 : 				client.update_row( NAME, strAry[0], datum);
  110 : 			}
  111 : 			br.close();
@@ -222,10 +222,10 @@ Java
  19 : 	public static final String CSV_PATH = "./src/main/resources/baseball.csv";
  20 : 
  21 : 	public void start() throws Exception {
- 22 : 		// ①Jubatus Serverへの接続設定
+ 22 : 		// 1. Jubatus Serverへの接続設定
  23 : 		RecommenderClient client = new RecommenderClient(HOST, PORT, 5);
  24 : 
- 25 : 		// ②推薦用データの準備
+ 25 : 		// 2. 推薦用データの準備
  26 : 		 List<TupleStringFloat> rec = new  ArrayList<TupleStringFloat>();
  27 : 
  28 : 		 try {
@@ -240,10 +240,10 @@ Java
  37 : 				// 1行をデータの要素に分割
  38 : 				String[] strAry = line.split(",");
  39 : 
- 40 : 				// ③学習モデルに基づく推薦
+ 40 : 				// 3. 学習モデルに基づく推薦
  41 : 				rec = client.similar_row_from_id(NAME, strAry[0], 4);
  42 : 
- 43 : 				// ④結果の出力
+ 43 : 				// 4. 結果の出力
  44 : 				System.out.print("player " + strAry[0] + " is similar to : " + rec.get(1).first +
  45 : 						" " +  rec.get(2).first + " " + rec.get(3).first );
  46 : 				System.out.println();
@@ -304,16 +304,18 @@ Java
 
 **Update.java**
 
- 3.3.3.3.1.に記載したソースコードを用いて、学習と推薦の手順を説明します。
+ 学習と推薦の手順を説明します。
 
  Recommenderのクライアントプログラムは、us.jubat.Recommenderクラス内で定義されているRecommenderClientクラスを利用して作成します。
  使用するメソッドは、1データ分の学習を行うupdate_rowメソッドと、与えられたデータから推薦を行うestimateメソッドの2つです。
 
- ① Jubatus Serverへの接続設定
+ 1. Jubatus Serverへの接続設定
+
   Jubatus Serverへの接続を行います（33行目）。
   Jubatus ServerのIPアドレス，Jubatus ServerのRPCポート番号，接続待機時間を設定します。
 
- ② 学習用データの準備
+ 2. 学習用データの準備
+
   Jubatus Serverに学習させるデータDatumを作成します（80行目）。
   
   RecommenderClientでは、Datumを学習用データとして作成し、RecommenderClientのupdate_rowメソッドに与えることで、学習が行われます。
@@ -378,7 +380,7 @@ Java
   ここでは、FileReaderとBuffererdReaderを利用して1行ずつループで読み込んで処理します（83-112行目）。
   CSVファイルなので、取得した1行を','で分割し要素ごとに分けます（76行目）。
   定義したCSVファイルの項目リスト（CSV_COLUMN）とString項目リスト（STRING_COLUMN）、Double項目リスト（DOUBLE_COLUMN）を用い型ごとに分けてリストを作成します（99-105行目）。
-  作成した２つのリストを引数としてDatumを作成するprivateメソッド「makeDatum」を呼び出します（107行目）。
+  作成した 2 つのリストを引数としてDatumを作成するprivateメソッド「makeDatum」を呼び出します（107行目）。
   
   「makeDatum」では、引数のString項目のリストとDouble項目のリストから、String型はTupleStringStringのListを、Double型はTupleStringDoubleのListを作成します（124-151行目）。
   まず、Datumクラスを生成してDatumの要素であるstring_valuesとnum_valuesのListをそれぞれ生成します（126-128行目）。
@@ -386,33 +388,37 @@ Java
   Double項目リストもString項目と同様にループでTupleStringDoubleを生成し、要素を設定してからnum_valuesに追加します。ここで注意する点は、引数はString型ですがDatumのnum_valuesはDouble型の為、変換が必要になります（142行目）。
   これで、1人分の選手のデータが入ったDatumの作成が完了しました。
 
- ③データの学習（学習モデルの更新）
-  ②の工程で作成した学習用データを、update_rowメソッドに渡すことで学習が行われます（109行目）。
+ 3. データの学習（学習モデルの更新）
+
+  2.の工程で作成した学習用データを、update_rowメソッドに渡すことで学習が行われます（109行目）。
   update_rowメソッドの第1引数は、タスクを識別するZookeeperクラスタ内でユニークな名前を指定します（スタンドアロン構成の場合、空文字（""）を指定）。
   第2引数は、IDで学習データ内でユニークな名前を指定します。ここでは選手の"名前"をIDとして使用します。
-  第3引数として、先ほど②で作成したDatumを指定します。
-  これで、選手1人分のデータの学習が完了しました。ループ処理で②と③をCSVの行数分繰り返し実行すれば、データの学習は完了します。
+  第3引数として、先ほど 2. で作成したDatumを指定します。
+  これで、選手1人分のデータの学習が完了しました。ループ処理で 2. と 3. をCSVの行数分繰り返し実行すれば、データの学習は完了します。
 
 **Analyze.java**
 
- ① Jubatus Serverへの接続設定
+ 1. Jubatus Serverへの接続設定
+
   Update.javaと同様のため省略。
   
- ②推薦用データの準備
+ 2. 推薦用データの準備
+
   推薦で必要なデータは先ほど学習でIDに指定した選手の"名前"になります。
   学習時と同じ要領で、カラムの1番目である"名前"を取得し、RecommenderClientのsimilar_row_from_idメソッドに与えることで、推薦が行われます。
 
-  
- ③学習モデルに基づく推薦
-  ②で取得した選手の"名前"を、similar_row_from_idメソッドに渡すことで、推薦結果のListを得ることができます（41行目）。
+ 3. 学習モデルに基づく推薦
+
+  2.で取得した選手の"名前"を、similar_row_from_idメソッドに渡すことで、推薦結果のListを得ることができます（41行目）。
   similar_row_from_idメソッドの第1引数は、タスクを識別するZookeeperクラスタ内でユニークな名前を指定します（スタンドアロン構成の場合、空文字（""）を指定）。
   第2引数に、"名前"を指定します。
   第3引数は、似ているタイプを近傍順にいくつ出力するかを指定します。ここでは、トップ3まで出力するので"4"を指定します。なぜ、"4"かというとトップは自身が出力される為です。
 
- ④結果の出力
-  ③で取得した、推薦結果のリストはsimilar_row_from_idメソッドの第3引数に"4"を指定したので、4つの要素を持ったListです。
+ 4. 結果の出力
+
+  3.で取得した、推薦結果のリストはsimilar_row_from_idメソッドの第3引数に"4"を指定したので、4つの要素を持ったListです。
   Listの1番目は自分自身なので、Listの2番目から4番目までを結果として出力します。
-  Update.javaと同様、選手1人ずつループで処理し②～④を繰り返します。
+  Update.javaと同様、選手1人ずつループで処理し 2. ～ 4. を繰り返します。
 
 ------------------------------------
 サンプルプログラムの実行
